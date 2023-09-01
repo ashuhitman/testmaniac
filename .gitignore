@@ -1,0 +1,27 @@
+# Logs
+logs
+*.log
+TestManiac/npm-debug.log*
+TestManiac/yarn-debug.log*
+TestManiac/yarn-error.log*
+TestManiac/pnpm-debug.log*
+TestManiac/lerna-debug.log*
+
+TestManiac/node_modules
+TestManiac/dist
+TestManiac/dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# api
+api/env
