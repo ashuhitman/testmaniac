@@ -1,4 +1,5 @@
 import React from "react";
+import "./Button.css";
 
 function Button({
   type = "text",
@@ -13,6 +14,8 @@ function Button({
   borderColor,
   boxShadow,
   fontSize,
+  clickFun = () => {},
+  disabled,
 }) {
   const btnStyle = {
     fontSize: fontSize,
@@ -30,7 +33,12 @@ function Button({
     boxShadow: boxShadow || "",
   };
   return (
-    <button type={type} style={btnStyle}>
+    <button
+      type={type}
+      style={btnStyle}
+      className={disabled ? "disabled-button" : ""}
+      onClick={(e) => clickFun(e)}
+    >
       {text}
     </button>
   );

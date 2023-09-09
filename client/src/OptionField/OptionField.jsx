@@ -1,10 +1,14 @@
 import React from "react";
 import "./OptionField.css";
 
-function OptionField() {
+function OptionField({ options, value, onChange }) {
   return (
-    <select>
-      <option value="0">Select Timer</option>
+    <select value={value} onChange={onChange} name="timer">
+      {options.map((option, index) => (
+        <option key={index} value={option.value}>
+          {option.label}
+        </option>
+      ))}
     </select>
   );
 }
