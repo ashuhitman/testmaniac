@@ -59,11 +59,3 @@
   color: red;
   font-size: 0.8em;
 }
-
-/* Extra small devices (phones, 600px and down) */
-@media only screen and (max-width: 600px) {
-  .modal-content {
-    min-width: 90%;
-    display: flex;
-  }
-}
