@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./Modal.css";
 import Button from "../Button/Button";
 import OptionField from "../OptionField/OptionField";
-import validation from "../utils/validation";
+import { validation } from "../utils/validation";
 import { useNavigate } from "react-router-dom";
 
 function Modal({ closeModal, modal }) {
@@ -40,15 +40,15 @@ function Modal({ closeModal, modal }) {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormErrors({ ...formErrors, [name]: "" });
-    const options = [];
+    const optionItem = [{ label: "Select Timer", value: "0" }];
     if (name === "questions") {
-      if (value >= 12) {
+      if (value >= 10) {
         for (let i = 0.5; i <= 2; i = i + 0.5) {
           let val = Math.floor((value * i) / 5) * 5;
-          options.push({ value: val, label: val + " minutes" });
+          optionItem.push({ value: val, label: val + " minutes" });
         }
       }
-      setOptions(options);
+      setOptions(optionItem);
     }
     console.log(e.target.value);
     setFormValues({ ...formValues, [name]: value });
@@ -91,7 +91,11 @@ function Modal({ closeModal, modal }) {
               <p className="error">{formErrors.questions}</p>
             </div>
             <div className="form-group">
-              <OptionField options={options} onChange={handleInputChange} />
+              <OptionField
+                options={options}
+                onChange={handleInputChange}
+                error={formErrors.timer}
+              />
             </div>
             <div className="form-footer">
               <Button

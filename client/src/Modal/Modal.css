@@ -38,20 +38,25 @@
 .modal-body > form {
   display: flex;
   flex-direction: column;
-  row-gap: 20px;
+  width: 100%;
   margin-top: 20px;
+  row-gap: 5px;
+}
+.modal-body > form > .form-group {
+  display: flex;
+  flex-direction: column;
 }
 .modal-body > form > .form-footer {
   align-self: center;
+  margin-top: 20px;
 }
 
 .container input {
-  width: 100%;
+  flex: 1;
   padding: 10px 10px;
   border: none;
 }
 .error {
   color: red;
   font-size: 0.8em;
-  margin-top: 5px;
 }

@@ -37,7 +37,7 @@ function Button({
       type={type}
       style={btnStyle}
       className={disabled ? "disabled-button" : ""}
-      onClick={(e) => clickFun(e)}
+      onClick={clickFun}
     >
       {text}
     </button>
