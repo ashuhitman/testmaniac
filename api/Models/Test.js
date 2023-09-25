@@ -11,9 +11,9 @@ const questionSchema = mongoose.Schema({
 });
 
 const testSchema = mongoose.Schema({
-  test_name: { type: String, required: true, trim: true },
+  testName: { type: String, required: true, trim: true },
   subject: { type: String, required: true, trim: true },
-  question_amount: { type: Number, required: true },
+  questionAmount: { type: Number, required: true },
   timer: { type: String, required: true, trim: true },
   questions: [questionSchema],
   createdAt: { type: Date, immutable: true, default: Date.now },

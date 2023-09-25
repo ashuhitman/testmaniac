@@ -25,3 +25,4 @@ TestManiac/dist-ssr
 
 # api
 api/env
+api/node_modules

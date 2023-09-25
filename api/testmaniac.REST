@@ -9,9 +9,9 @@ POST http://127.0.0.1:8000/tests/create
 Content-Type: application/json
 
 {
-    "test_name": "test12343",
+    "testName": "test12343",
     "subject": "maths",
-    "question_amount": 15,
+    "questionAmount": 15,
     "timer": "30",
     "questions": []
 }

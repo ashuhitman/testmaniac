@@ -4,21 +4,22 @@ import Button from "../Button/Button";
 import OptionField from "../OptionField/OptionField";
 import { validation } from "../utils/validation";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function Modal({ closeModal, modal }) {
   const navigate = useNavigate();
   // form values
   const [formValues, setFormValues] = useState({
-    test_name: "",
+    testName: "",
     subject: "",
-    questions: "",
+    questionAmount: "",
     timer: "",
   });
   // form errors
   const [formErrors, setFormErrors] = useState({
-    test_name: "",
+    testName: "",
     subject: "",
-    questions: "",
+    questionAmount: "",
     timer: "",
   });
   const [options, setOptions] = useState([
@@ -30,9 +31,16 @@ function Modal({ closeModal, modal }) {
 
     const [isSubmit, errors] = validation(formValues);
     if (isSubmit) {
-      console.log(formValues);
-      navigate("/tests/create", { state: { formValues } });
-      return;
+      // add test info to database
+
+      const apiUrl = "https://test-maniac.onrender.com/tests/create";
+      axios
+        .post(apiUrl, formValues)
+        .then((response) => {
+          console.log("API Response:", response.data);
+          // navigate("/tests/create", { state: { formValues } });
+        })
+        .catch((error) => console.error("Error", error));
     }
     setFormErrors({ ...formErrors, ...errors });
   };
@@ -66,10 +74,10 @@ function Modal({ closeModal, modal }) {
               <input
                 type="text"
                 placeholder="Test Name"
-                name="test_name"
+                name="testName"
                 onChange={handleInputChange}
               />
-              <p className="error">{formErrors.test_name}</p>
+              <p className="error">{formErrors.testName}</p>
             </div>
             <div className="form-group">
               <input
@@ -84,11 +92,11 @@ function Modal({ closeModal, modal }) {
               <input
                 type="number"
                 placeholder="Number of questions"
-                name="questions"
+                name="questionAmount"
                 onChange={handleInputChange}
                 min="10"
               />
-              <p className="error">{formErrors.questions}</p>
+              <p className="error">{formErrors.questionAmount}</p>
             </div>
             <div className="form-group">
               <OptionField

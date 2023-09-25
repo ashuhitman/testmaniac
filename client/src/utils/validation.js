@@ -40,11 +40,11 @@ const validation = (values) => {
   const errors = {};
   console.log(values);
   let isSubmit = true;
-  if (!values.test_name.trim()) {
-    errors.test_name = "Test name is required";
+  if (!values.testName.trim()) {
+    errors.testName = "Test name is required";
     isSubmit = false;
-  } else if (values.test_name.trim().length <= 5) {
-    errors.test_name = "Test name must be longer than 5 characters";
+  } else if (values.testName.trim().length <= 5) {
+    errors.testName = "Test name must be longer than 5 characters";
     isSubmit = false;
   }
 
@@ -53,10 +53,10 @@ const validation = (values) => {
     isSubmit = false;
   }
 
-  if (!values.questions) {
-    errors.questions = "Number of questions is required";
+  if (!values.question_amount) {
+    errors.questionAmount = "Number of questions is required";
     isSubmit = false;
-  } else if (values.questions < 10) {
+  } else if (values.questionAmount < 10) {
     errors.questions = "Number of questions must be greater than 10";
     isSubmit = false;
   }
