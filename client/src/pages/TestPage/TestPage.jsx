@@ -70,15 +70,14 @@ function TestPage() {
     };
     // validate inputs
     const [isNext, errors] = test_page_validation(data);
-    console.log(errors);
-    console.log(errors);
+
     if (!isNext) {
       setFormErrors(errors);
 
       if (errors.alert) {
         alert("Choose a coorect option");
       }
-      console.log("data not validated");
+
       return;
     }
 
@@ -103,9 +102,12 @@ function TestPage() {
     // save current question no before upadting it
     lastVisistedQuestions.current = currentQuestion;
     if (currentQuestion === 1) return;
-    console.log(currentQuestion);
+    // update current question
     setCurrentQuestion(currentQuestion - 1);
+    // set submit to false
     setSubmit(false);
+    // reset form erros
+    setFormErrors({});
   };
   const handleRadioChange = (id) => {
     setOption1({ ...option1, isAnswer: false });

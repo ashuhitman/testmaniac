@@ -53,11 +53,11 @@ const validation = (values) => {
     isSubmit = false;
   }
 
-  if (!values.question_amount) {
+  if (!values.questionAmount) {
     errors.questionAmount = "Number of questions is required";
     isSubmit = false;
   } else if (values.questionAmount < 10) {
-    errors.questions = "Number of questions must be greater than 10";
+    errors.questionAmount = "Number of questions must be greater than 10";
     isSubmit = false;
   }
 

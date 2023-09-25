@@ -49,7 +49,8 @@ function Modal({ closeModal, modal }) {
     const { name, value } = e.target;
     setFormErrors({ ...formErrors, [name]: "" });
     const optionItem = [{ label: "Select Timer", value: "0" }];
-    if (name === "questions") {
+    if (name === "questionAmount") {
+      // update timer field on change question amount field
       if (value >= 10) {
         for (let i = 0.5; i <= 2; i = i + 0.5) {
           let val = Math.floor((value * i) / 5) * 5;

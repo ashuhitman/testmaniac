@@ -10,7 +10,7 @@ Content-Type: application/json
 
 {
     "testName": "test12343",
-    "subject": "maths",
+    "subject": "Science",
     "questionAmount": 15,
     "timer": "30",
     "questions": []
