@@ -1,5 +1,4 @@
 const test_page_validation = (values) => {
-  console.log("data:", values);
   const errors = { options: [], alert: false };
   let isNext = true;
   if (!values.question.trim()) {
@@ -13,7 +12,6 @@ const test_page_validation = (values) => {
   for (let option of values.options) {
     errors.options[count] = "";
     if (!option.text) {
-      console.log(option);
       errors.options[count] = "option is required";
       isNext = false;
     }
@@ -22,8 +20,10 @@ const test_page_validation = (values) => {
   }
 
   if (isCorrectOptionChosen(values.options)) {
-    isNext = false;
-    errors.alert = true;
+    if (isNext) {
+      isNext = false;
+      errors.alert = true;
+    }
   }
 
   return [isNext, errors];

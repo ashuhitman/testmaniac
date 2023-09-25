@@ -24,7 +24,7 @@
 
 .question-title > div {
   display: flex;
-  background-color: aqua;
+  background-color: #2d3436;
   justify-content: center;
   align-items: center;
 }
@@ -44,6 +44,7 @@
 }
 .question-option {
   margin-top: 10px;
+  margin-bottom: 10px;
 }
 
 .question-option > div {
