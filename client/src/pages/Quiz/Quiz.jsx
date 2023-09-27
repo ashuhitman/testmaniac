@@ -20,13 +20,21 @@ function Quiz() {
   const [score, setScore] = useState(0);
   const [isCorrect, setIsCorrect] = useState(false);
   const [submit, setSubmit] = useState(false);
-  const [chosenOptions, setChosenOptions] = useState([]);
+  const [chosenOptions, setChosenOptions] = useState([
+    // -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+  ]);
   const [chosenOption, setChosenOption] = useState();
   const preQuestion = useRef(0);
+  const [showSolutions, setShowSolutions] = useState(false);
   useEffect(() => {
-    // submit if time has finished
-    if (submit || !isTimeLeft) {
+    // submit if time has finish
+
+    if (!isTimeLeft) {
+      setSubmit(true);
+    }
+    if (submit) {
       reset(0);
+      setShowSolutions(true);
       console.log(chosenOptions);
       console.log("submitting and score is " + score);
     }
@@ -42,7 +50,7 @@ function Quiz() {
     preQuestion.current = currentQuestion;
 
     // updat ethe score
-    if (isCorrect && !submit && isTimeLeft) {
+    if (isCorrect && !submit) {
       setScore(score + 1);
     }
     // save chosen option
@@ -63,7 +71,7 @@ function Quiz() {
 
   const onPrevious = () => {
     console.log("pre clicked");
-    if (isCorrect && !submit && isTimeLeft) {
+    if (isCorrect && !submit) {
       setScore(score - 1);
     }
     // save the questionn no before going to next question
@@ -74,7 +82,7 @@ function Quiz() {
   };
 
   const colorCodeCorrectAndWrongAnswer = (option, index) => {
-    if (submit && !isTimeLeft) {
+    if (showSolutions) {
       if (index === chosenOptions[currentQuestion]) {
         return true;
       }
@@ -90,14 +98,14 @@ function Quiz() {
           </div>
           <div className={styles.links}>
             <div>
-              {(submit || !isTimeLeft) && (
+              {submit && (
                 <Link className={styles.link}>
                   Score: {score}/{totalQuestions}
                 </Link>
               )}
               <Link className={styles.link}>
-                Time Left <span>{hh}</span> : <span>{mm}</span> :{" "}
-                <span>{ss}</span>
+                <span className={styles.timeLeft}>Time Left</span>{" "}
+                <span>{hh}</span> : <span>{mm}</span> : <span>{ss}</span>
               </Link>
             </div>
           </div>
@@ -105,7 +113,7 @@ function Quiz() {
       </header>
       <div className={styles.container}>
         <div>
-          <strong>{currentQuestion + 1}.</strong>
+          <strong>{currentQuestion + 1}. </strong>
           {questions[currentQuestion].question}
         </div>
         <div className={styles.options}>
@@ -115,7 +123,8 @@ function Quiz() {
                 <li
                   key={index}
                   style={{
-                    backgroundColor: option.isAnswer && submit && "green",
+                    backgroundColor:
+                      option.isAnswer && showSolutions && "green",
                   }}
                   className={
                     colorCodeCorrectAndWrongAnswer(option, index)

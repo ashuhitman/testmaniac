@@ -62,7 +62,7 @@ function Modal({ closeModal, modal }) {
     if (name === "questionAmount") {
       // update timer field on change question amount field
       if (value >= MIN_QUESTION) {
-        for (let i = 0.5; i <= 2; i = i + 0.5) {
+        for (let i = 0.5; i <= 3; i = i + 0.5) {
           let val = Math.floor((value * i) / 5) * 5;
           if (val !== 0) {
             optionItem.push({ value: val, label: val + " minutes" });
