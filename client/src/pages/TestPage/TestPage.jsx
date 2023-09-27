@@ -1,12 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
+import axios from "axios";
 import "./TestPage.css";
-import Button from "../../Button/Button";
+import Button from "../../Components/Button/Button";
 import { useLocation } from "react-router-dom";
 import { test_page_validation } from "../../utils/validation";
 
 function TestPage() {
   const location = useLocation();
-  const noOfQuestions = parseInt(location.state.formValues.questions);
+  const noOfQuestions = parseInt(location.state.testData.questionAmount);
+  const testId = location.state.testData._id;
   const lastVisistedQuestions = useRef(0);
   const [currentQuestion, setCurrentQuestion] = useState(1);
   const [submit, setSubmit] = useState(false);
@@ -150,6 +152,14 @@ function TestPage() {
     e.preventDefault();
     if (currentQuestion + 1 < noOfQuestions) return;
     console.log("go to score page");
+    const apiUrl = `https://test-maniac.onrender.com/questions/add/${testId}`;
+    axios
+      .post(apiUrl, testData)
+      .then((response) => {
+        console.log("API Response:", response.data);
+        // navigate("/tests/create", { state: { formValues } });
+      })
+      .catch((error) => console.error("Error", error));
   };
 
   return (

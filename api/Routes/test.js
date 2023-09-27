@@ -17,7 +17,7 @@ router.post("/create", async (req, res) => {
   try {
     const test = Test(req.body);
     const result = await test.save();
-    res.send({ success: "added succesfully", data: result });
+    res.status(200).send({ success: "added succesfully", data: result });
   } catch (error) {
     res.send({ error: error.message });
   }

@@ -1,21 +1,35 @@
-import React, { useState } from "react";
-import Modal from "../../Modal/Modal";
-import Button from "../../Button/Button";
+import React, { useEffect, useState } from "react";
+import Modal from "../../Components/Modal/Modal";
+import Button from "../../Components/Button/Button";
 import "./HomePage.css";
+import Loader from "../../Components/Loader/Loader";
+import Header from "../../Components/Header/Header";
+import TestCard from "../../Components/TestCard/TestCard";
+import axios from "axios";
+import { API_ENDPOINTS } from "../../utils/constants";
+import HomePageLoader from "../../Components/HomePageLoader/HomePageLoader";
 
 function HomePage() {
-  const [modal, setModal] = useState(false);
-  const closeModal = () => setModal(!modal);
+  const [tests, setTests] = useState([]);
+  useEffect(() => {
+    axios
+      .get(API_ENDPOINTS.TESTS)
+      .then((response) => setTests(response.data))
+      .catch((error) => console.log(error));
+  }, []);
+  let mainContent;
+  if (tests.length === 0) {
+    console.log("loading...");
+    return <HomePageLoader />;
+  }
   return (
     <div className="container">
-      <Modal closeModal={closeModal} modal={modal} />
-      <Button
-        text="Create Test"
-        ph="10px"
-        py="8px"
-        boxShadow="rgba(0, 0, 0, 0.24) 0px 3px 8px"
-        clickFun={closeModal}
-      />
+      <Header />
+      <div className="test-container">
+        {tests.map((test, index) => (
+          <TestCard key={index} cardData={test} />
+        ))}
+      </div>
     </div>
   );
 }

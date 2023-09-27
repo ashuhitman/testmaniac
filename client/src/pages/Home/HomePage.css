@@ -1,6 +1,14 @@
-.container > button {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+.test-container {
+  padding: 15px;
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+/* Extra small devices (phones, 600px and down) */
+@media only screen and (max-width: 600px) {
+  .test-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
 }

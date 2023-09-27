@@ -1,13 +1,16 @@
 import React, { useState } from "react";
-import "./Modal.css";
+import styles from "./Modal.module.css";
 import Button from "../Button/Button";
 import OptionField from "../OptionField/OptionField";
-import { validation } from "../utils/validation";
+import { validation } from "../../utils/validation";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { MIN_QUESTION } from "../../utils/constants";
+import Loader from "../Loader/Loader";
 
 function Modal({ closeModal, modal }) {
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
   // form values
   const [formValues, setFormValues] = useState({
     testName: "",
@@ -31,16 +34,23 @@ function Modal({ closeModal, modal }) {
 
     const [isSubmit, errors] = validation(formValues);
     if (isSubmit) {
+      // show loader
+      setIsLoading(true);
       // add test info to database
 
       const apiUrl = "https://test-maniac.onrender.com/tests/create";
       axios
         .post(apiUrl, formValues)
         .then((response) => {
-          console.log("API Response:", response.data);
-          // navigate("/tests/create", { state: { formValues } });
+          const testData = response.data.data;
+          console.log("API Response:", testData);
+
+          navigate("/tests/create", { state: { testData } });
         })
-        .catch((error) => console.error("Error", error));
+        .catch((error) => {
+          console.error("Error", error);
+          setIsLoading(false);
+        });
     }
     setFormErrors({ ...formErrors, ...errors });
   };
@@ -51,10 +61,12 @@ function Modal({ closeModal, modal }) {
     const optionItem = [{ label: "Select Timer", value: "0" }];
     if (name === "questionAmount") {
       // update timer field on change question amount field
-      if (value >= 10) {
+      if (value >= MIN_QUESTION) {
         for (let i = 0.5; i <= 2; i = i + 0.5) {
           let val = Math.floor((value * i) / 5) * 5;
-          optionItem.push({ value: val, label: val + " minutes" });
+          if (val !== 0) {
+            optionItem.push({ value: val, label: val + " minutes" });
+          }
         }
       }
       setOptions(optionItem);
@@ -65,31 +77,34 @@ function Modal({ closeModal, modal }) {
 
   if (!modal) return <></>;
   return (
-    <div className="modal">
-      <div className="overlay" onClick={closeModal}></div>
-      <div className="modal-content">
-        <div className="modal-header">Test Details</div>
-        <div className="modal-body">
+    <div className={styles.modal}>
+      <div className={styles.overlay} onClick={closeModal}></div>
+      <div className={styles["modal-content"]}>
+        <div className={styles["loader-container"]}>
+          {isLoading && <Loader />}
+        </div>
+        <div className={styles["modal-header"]}>Test Details</div>
+        <div className={styles["modal-body"]}>
           <form>
-            <div className="form-group">
+            <div className={styles["form-group"]}>
               <input
                 type="text"
                 placeholder="Test Name"
                 name="testName"
                 onChange={handleInputChange}
               />
-              <p className="error">{formErrors.testName}</p>
+              <p className={styles.error}>{formErrors.testName}</p>
             </div>
-            <div className="form-group">
+            <div className={styles["form-group"]}>
               <input
                 type="text"
                 placeholder="Subject Name"
                 name="subject"
                 onChange={handleInputChange}
               />
-              <p className="error">{formErrors.subject}</p>
+              <p className={styles.error}>{formErrors.subject}</p>
             </div>
-            <div className="form-group">
+            <div className={styles["form-group"]}>
               <input
                 type="number"
                 placeholder="Number of questions"
@@ -97,16 +112,16 @@ function Modal({ closeModal, modal }) {
                 onChange={handleInputChange}
                 min="10"
               />
-              <p className="error">{formErrors.questionAmount}</p>
+              <p className={styles.error}>{formErrors.questionAmount}</p>
             </div>
-            <div className="form-group">
+            <div className={styles["form-group"]}>
               <OptionField
                 options={options}
                 onChange={handleInputChange}
                 error={formErrors.timer}
               />
             </div>
-            <div className="form-footer">
+            <div className={styles["form-footer"]}>
               <Button
                 type="button"
                 text="Close"
@@ -115,6 +130,7 @@ function Modal({ closeModal, modal }) {
                 radius="2px"
                 clickFun={closeModal}
               />
+              {}
               <span style={{ margin: "0 10px" }} />
               <Button
                 type="submit"

@@ -44,11 +44,19 @@ Content-Type: application/json
 }
 
 ### append  many questions
-POST http://127.0.0.1:8000/questions/add/650746f8597a3bfce666b03c
+POST http://127.0.0.1:8000/questions/add/6511d08c165149838796b433
 Content-Type: application/json
 
 [{
     "question": "What is formula of sulphric acid?",
+    "options": [
+    { "text": "H2SO4", "isAnswer": true },
+    { "text": "H20", "isAnswer": false },
+    { "text": "HN03", "isAnswer": false },
+    { "text": "H2S03", "isAnswer": false }]
+},
+{
+    "question": "What is for yr s rmula of sulphric acid?",
     "options": [
     { "text": "H2SO4", "isAnswer": true },
     { "text": "H20", "isAnswer": false },

@@ -1,0 +1,84 @@
+/* Header.css */
+.quiz {
+  color: black;
+  position: relative;
+}
+.navbar {
+  display: flex;
+  align-items: center;
+  background-color: #2c3e50;
+  color: white;
+  justify-content: space-between;
+  padding: 8px 15px;
+  font-size: 0.9em;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px,
+    rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+}
+.logo {
+  /* border: 1px solid white; */
+  font-size: 1.2em;
+}
+.links {
+  display: flex;
+}
+.links > div {
+}
+
+.link {
+  text-decoration: none;
+  color: white;
+  padding-bottom: 2px;
+  margin-right: 20px;
+  margin-right: 20px;
+  background-color: black;
+  padding: 8px;
+}
+
+.link:hover {
+  text-decoration: none;
+  color: white;
+  border-bottom: 2px solid black;
+}
+.container {
+  position: fixed;
+  top: 50px;
+  padding: 20px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.options {
+  flex: 1;
+}
+
+.options li {
+  list-style-type: none;
+  margin-top: 10px;
+  padding: 10px 10px;
+}
+.options li:hover {
+  background-color: beige;
+}
+.options input:focus {
+  outline: none;
+}
+
+.options .correct {
+  background-color: green;
+  color: white;
+}
+.footer {
+  display: flex;
+  justify-content: space-between;
+}
+.footer button {
+  font-size: 1.1em;
+  border: none;
+  padding: 8px 8px;
+  cursor: pointer;
+  background-color: #3c5165;
+  color: white;
+}

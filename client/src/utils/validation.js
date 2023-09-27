@@ -1,3 +1,5 @@
+import { MIN_QUESTION, TEXT_LENGTH } from "./constants";
+
 const test_page_validation = (values) => {
   const errors = { options: [], alert: false };
   let isNext = true;
@@ -43,8 +45,8 @@ const validation = (values) => {
   if (!values.testName.trim()) {
     errors.testName = "Test name is required";
     isSubmit = false;
-  } else if (values.testName.trim().length <= 5) {
-    errors.testName = "Test name must be longer than 5 characters";
+  } else if (values.testName.trim().length <= TEXT_LENGTH) {
+    errors.testName = `Test name must be longer than ${TEXT_LENGTH} characters`;
     isSubmit = false;
   }
 
@@ -56,8 +58,9 @@ const validation = (values) => {
   if (!values.questionAmount) {
     errors.questionAmount = "Number of questions is required";
     isSubmit = false;
-  } else if (values.questionAmount < 10) {
-    errors.questionAmount = "Number of questions must be greater than 10";
+  } else if (values.questionAmount < MIN_QUESTION) {
+    errors.questionAmount =
+      "Number of questions must be greater than or equal to ${MIN_QUESTION}";
     isSubmit = false;
   }
 
