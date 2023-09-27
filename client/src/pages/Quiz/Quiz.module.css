@@ -27,18 +27,14 @@
 .link {
   text-decoration: none;
   color: white;
-  padding-bottom: 2px;
   margin-right: 20px;
-  margin-right: 20px;
+}
+.link span {
   background-color: black;
-  padding: 8px;
+  padding: 4px 4px;
+  border-radius: 4px;
 }
 
-.link:hover {
-  text-decoration: none;
-  color: white;
-  border-bottom: 2px solid black;
-}
 .container {
   position: fixed;
   top: 50px;
@@ -66,8 +62,8 @@
   outline: none;
 }
 
-.options .correct {
-  background-color: green;
+.options .chosenOption {
+  background-color: red;
   color: white;
 }
 .footer {

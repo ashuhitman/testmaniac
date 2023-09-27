@@ -109,7 +109,11 @@ function TestPage() {
     // set submit to false
     setSubmit(false);
     // reset form erros
-    setFormErrors({});
+    setFormErrors({
+      question: "",
+      options: [],
+      alert: false,
+    });
   };
   const handleRadioChange = (id) => {
     setOption1({ ...option1, isAnswer: false });
