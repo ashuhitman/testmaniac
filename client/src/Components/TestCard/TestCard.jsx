@@ -4,9 +4,9 @@ import { useNavigate } from "react-router-dom";
 
 function TestCard({ cardData }) {
   const navigate = useNavigate();
-  const { testName, timer, questionAmount, subject, questions } = cardData;
+  const { _id, testName, timer, questionAmount, subject, questions } = cardData;
   const goToQuizPage = () => {
-    navigate("/quiz", { state: cardData });
+    navigate(`/quiz/${_id}`, { state: cardData });
   };
   return (
     <div className={styles.card}>

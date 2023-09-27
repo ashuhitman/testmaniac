@@ -18,7 +18,7 @@
 
 .modal-content {
   position: absolute;
-  top: 50%;
+  top: -50%;
   left: 50%;
   transform: translate(-50%, -50%);
   line-height: 1.4;
@@ -27,6 +27,15 @@
   width: min(400px, 70%);
   color: black;
   padding: 20px 30px;
+  animation: slide 0.5s forwards;
+}
+@keyframes slide {
+  100% {
+    top: 50%;
+  }
+}
+.showModal {
+  /* top: 50%; */
 }
 
 .modal-body {

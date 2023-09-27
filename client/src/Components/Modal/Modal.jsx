@@ -79,7 +79,9 @@ function Modal({ closeModal, modal }) {
   return (
     <div className={styles.modal}>
       <div className={styles.overlay} onClick={closeModal}></div>
-      <div className={styles["modal-content"]}>
+      <div
+        className={`${styles["modal-content"]} ${modal && styles.showModal}`}
+      >
         <div className={styles["loader-container"]}>
           {isLoading && <Loader />}
         </div>
@@ -92,6 +94,7 @@ function Modal({ closeModal, modal }) {
                 placeholder="Test Name"
                 name="testName"
                 onChange={handleInputChange}
+                maxLength={32}
               />
               <p className={styles.error}>{formErrors.testName}</p>
             </div>

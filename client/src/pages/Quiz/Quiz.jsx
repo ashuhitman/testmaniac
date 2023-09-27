@@ -4,28 +4,40 @@ import { useLocation, Link } from "react-router-dom";
 import styles from "./Quiz.module.css";
 import useCountDown from "../../Hooks/useCountDown";
 import secondsToTime from "../../utils/timeConversion";
+import axios from "axios";
+import { API_ENDPOINTS } from "../../utils/constants";
 
 function Quiz() {
+  // get passed data here
   const { state } = useLocation();
-  const questions = state.questions;
+
   const time = parseInt(state.timer);
+
+  const [questions, setQuestions] = useState(state.questions);
   const totalQuestions = questions.length;
 
+  // get left time
   const [
     isTimeLeft,
     reset,
     { hoursString: hh, minutesString: mm, secondsString: ss },
   ] = useCountDown(parseInt(time));
+  // set current questions
   const [currentQuestion, setCurrentQuestion] = useState(0);
+  // set score
   const [score, setScore] = useState(0);
   const [isCorrect, setIsCorrect] = useState(false);
   const [submit, setSubmit] = useState(false);
-  const [chosenOptions, setChosenOptions] = useState([
-    // -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-  ]);
+  const [chosenOptions, setChosenOptions] = useState([]);
   const [chosenOption, setChosenOption] = useState();
   const preQuestion = useRef(0);
   const [showSolutions, setShowSolutions] = useState(false);
+  useEffect(() => {
+    console.log(questions);
+    // if(questions === null || questions === undefined) {
+    //   axios.get(API_ENDPOINTS.QUESTIONS)
+    // }
+  }, []);
   useEffect(() => {
     // submit if time has finish
 
@@ -38,11 +50,12 @@ function Quiz() {
       console.log(chosenOptions);
       console.log("submitting and score is " + score);
     }
-  }, [isTimeLeft, submit]);
-
-  useEffect(() => {
     setChosenOption(chosenOptions[currentQuestion]);
-  }, [currentQuestion]);
+  }, [isTimeLeft, submit, currentQuestion]);
+
+  // useEffect(() => {
+  //   setChosenOption(chosenOptions[currentQuestion]);
+  // }, [currentQuestion]);
 
   const onNext = () => {
     console.log("next clicked", chosenOption);
