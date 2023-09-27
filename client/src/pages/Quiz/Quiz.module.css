@@ -21,15 +21,12 @@
 .links {
   display: flex;
 }
-.links > div {
-}
 
 .link {
   text-decoration: none;
   color: white;
-  margin-right: 20px;
 }
-.link span {
+.link span:not(:first-child) {
   background-color: black;
   padding: 4px 4px;
   border-radius: 4px;
