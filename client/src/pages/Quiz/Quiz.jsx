@@ -7,6 +7,7 @@ import useCountDown from "../../Hooks/useCountDown";
 import secondsToTime from "../../utils/timeConversion";
 
 import { API_ENDPOINTS } from "../../utils/constants";
+import Alert from "../../Components/Alert/Alert";
 
 function Quiz() {
   // get test data
@@ -20,6 +21,7 @@ function Quiz() {
   const [chosenOptions, selectChosenOptions] = useState([]);
   const [submit, setSubmit] = useState();
   const [showSolutions, setShowSolutions] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
 
   useEffect(() => {
     if (!testData) {
@@ -54,6 +56,10 @@ function Quiz() {
     selectChosenOption(chosenOptions[currentQuestion]);
   }, [submit, isTimeLeft, currentQuestion]);
 
+  const showHandler = (show) => {
+    setShowAlert(show);
+  };
+
   const onNext = () => {
     const totalQuestions = testData.questions.length;
     // submit = false, then add chosen option
@@ -65,7 +71,7 @@ function Quiz() {
       }
     }
     // submit = true
-    if (currentQuestion >= totalQuestions - 1) setSubmit(true);
+    if (currentQuestion >= totalQuestions - 1 && !submit) setShowAlert(true);
     // increment only if it is less than the number of questions
     if (currentQuestion < totalQuestions - 1) {
       setCurrentQuestion(currentQuestion + 1);
@@ -87,6 +93,15 @@ function Quiz() {
   }
   return (
     <div className={styles.quiz}>
+      <Alert
+        show={showAlert}
+        showHandler={showHandler}
+        title="Submit Quiz"
+        body="Are you sure?"
+        leftText="Yes"
+        handleLeft={() => setSubmit(true)}
+        rightText="No"
+      />
       <header className={styles["quiz-header"]}>
         <div className={styles.navbar}>
           <div className={styles.logo}>
