@@ -6,7 +6,7 @@ import { validation } from "../../utils/validation";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { MIN_QUESTION } from "../../utils/constants";
-import Loader from "../Loader/Loader";
+import Loader from "../Loader/Loader.jsx";
 
 function Modal({ closeModal, modal }) {
   const navigate = useNavigate();

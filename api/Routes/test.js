@@ -1,4 +1,6 @@
 import { Router } from "express";
+import mongoose from "mongoose";
+const ObjectId = mongoose.Types.ObjectId;
 const router = Router();
 
 import Test from "../Models/Test.js";
@@ -7,7 +9,11 @@ import Test from "../Models/Test.js";
 router.get("/", async (req, res) => {
   try {
     const tests = await Test.find({});
-    res.send(tests);
+    if (tests) {
+      res.send(tests);
+    } else {
+      res.send({ error: "invalid id" });
+    }
   } catch (error) {
     res.send({ error: error.message });
   }
@@ -15,10 +21,19 @@ router.get("/", async (req, res) => {
 // fetch a test by id
 router.get("/:id", async (req, res) => {
   try {
-    const tests = await Test.findOne({ _id: req.params.id });
-    res.send(tests);
+    const documentId = req.params.id;
+    // Validate the documentId to ensure it's a valid ObjectId
+    if (!ObjectId.isValid(documentId)) {
+      throw new Error("Invalid Test ID");
+    }
+    const test = await Test.findOne({ _id: documentId });
+    if (test) {
+      res.status(200).send(test);
+    } else {
+      throw new Error("Test Id does not exist");
+    }
   } catch (error) {
-    res.send({ error: error.message });
+    res.status(400).send(error.message);
   }
 });
 // add test

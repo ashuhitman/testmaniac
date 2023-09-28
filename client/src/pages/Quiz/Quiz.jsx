@@ -1,136 +1,113 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation, Link, useParams } from "react-router-dom";
+import axios from "axios";
 
 import styles from "./Quiz.module.css";
 import useCountDown from "../../Hooks/useCountDown";
 import secondsToTime from "../../utils/timeConversion";
-import axios from "axios";
+import Loader from "../../components/Loader/Loader";
+
 import { API_ENDPOINTS } from "../../utils/constants";
 
 function Quiz() {
-  const [loading, setLoading] = useState(false);
+  // get test data
+  const { state } = useLocation();
   // get document id
   const { docId } = useParams();
-  // get passed data here
-  const { state } = useLocation();
-  const [testData, setTestData] = useState(state);
-
-  // get left time
-  const [
-    isTimeLeft,
-    reset,
-    { hoursString: hh, minutesString: mm, secondsString: ss },
-  ] = useCountDown(parseInt(null));
-  // set current questions
+  const [testData, setTestData] = useState(state || null);
   const [currentQuestion, setCurrentQuestion] = useState(0);
-  // set score
-  const [score, setScore] = useState(0);
-  const [isCorrect, setIsCorrect] = useState(false);
-  const [submit, setSubmit] = useState(false);
-  const [chosenOptions, setChosenOptions] = useState([]);
-  const [chosenOption, setChosenOption] = useState();
-  const preQuestion = useRef(0);
+  const [isTimeLeft, set, reset, time] = useCountDown(null);
+  const [chosenOption, selectChosenOption] = useState();
+  const [chosenOptions, selectChosenOptions] = useState([]);
+  const [submit, setSubmit] = useState();
   const [showSolutions, setShowSolutions] = useState(false);
+
   useEffect(() => {
-    if (testData === null) {
-      setLoading(true);
-      axios
-        .get(`${API_ENDPOINTS.TESTS}/${docId}`)
+    if (!testData) {
+      setTimeout(() => {}, 30000);
+      axios(`${API_ENDPOINTS.TESTS}/${docId}`)
         .then((response) => {
-          console.log(response);
-          setLoading(false);
-          setTestData(response.data);
+          const data = response.data;
+          // set test data
+          setTestData(data);
+          console.log("success", response);
+          // set timer
+          set(parseInt(data.timer) * 60);
         })
         .catch((error) => {
-          setLoading(false);
+          console.log("error", error);
         });
     } else {
-      reset(testData.timer);
+      console.log("set clock");
+      set(parseInt(testData.timer) * 60);
     }
   }, []);
-  useEffect(() => {
-    // submit if time has finish
 
-    if (!isTimeLeft) {
+  useEffect(() => {
+    if (!isTimeLeft && !submit) {
       setSubmit(true);
     }
     if (submit) {
-      reset(0);
+      console.log("submit quiz");
+      reset();
       setShowSolutions(true);
-      console.log(chosenOptions);
-      console.log("submitting and score is " + score);
     }
-    setChosenOption(chosenOptions[currentQuestion]);
-  }, [isTimeLeft, submit, currentQuestion]);
+    selectChosenOption(chosenOptions[currentQuestion]);
+  }, [submit, isTimeLeft, currentQuestion]);
 
   const onNext = () => {
     const totalQuestions = testData.questions.length;
-    console.log("next clicked", chosenOption);
-    // save the questionn no before going to next question
-    preQuestion.current = currentQuestion;
-
-    // updat ethe score
-    if (isCorrect && !submit) {
-      setScore(score + 1);
-    }
-    // save chosen option if submit is false
+    // submit = false, then add chosen option
     if (!submit) {
       chosenOptions[currentQuestion] = chosenOption;
-      setChosenOptions(chosenOptions);
-    }
-
-    // if last question then submit
-    if (currentQuestion === totalQuestions - 1) {
-      setSubmit(true);
-      return;
-    }
-
-    // clean chisen option
-    setChosenOption("");
-    // increment current question number
-    setCurrentQuestion(currentQuestion + 1);
-  };
-
-  const onPrevious = () => {
-    console.log("pre clicked");
-    if (isCorrect && !submit) {
-      setScore(score - 1);
-    }
-    // save the questionn no before going to next question
-    preQuestion.current = currentQuestion;
-    if (currentQuestion > 0) {
-      setCurrentQuestion(currentQuestion - 1);
-    }
-  };
-
-  const colorCodeCorrectAndWrongAnswer = (option, index) => {
-    if (showSolutions) {
-      if (index === chosenOptions[currentQuestion]) {
-        return true;
+      selectChosenOptions(chosenOptions);
+      if (currentQuestion < totalQuestions - 1) {
+        selectChosenOption();
       }
     }
-    return false;
+    // submit = true
+    if (currentQuestion >= totalQuestions - 1) setSubmit(true);
+    // increment only if it is less than the number of questions
+    if (currentQuestion < totalQuestions - 1) {
+      setCurrentQuestion(currentQuestion + 1);
+    }
+  };
+  const onPrevious = () => {
+    if (currentQuestion > 0) setCurrentQuestion(currentQuestion - 1);
   };
 
-  if (loading) return <div>loading...</div>;
-
+  const handleChange = (index) => {
+    selectChosenOption(index);
+  };
+  if (!testData) {
+    return (
+      <div style={{ color: "black" }}>
+        <p>loading...</p>
+      </div>
+    );
+  }
   return (
     <div className={styles.quiz}>
       <header className={styles["quiz-header"]}>
         <div className={styles.navbar}>
           <div className={styles.logo}>
-            {testData && testData.testName} ({testData && testData.subject})
+            {testData.testName} ({testData.subject})
           </div>
           <div className={styles.links}>
             <div>
-              {submit && (
-                <Link className={styles.link}>
-                  Score: {score}/{testData && testData.questions.length}
-                </Link>
-              )}
               <Link className={styles.link}>
                 <span className={styles.timeLeft}>Time Left</span>{" "}
-                <span>{hh}</span> : <span>{mm}</span> : <span>{ss}</span>
+                <span>
+                  {time && time.hoursString ? time.hoursString : "00"}
+                </span>{" "}
+                :{" "}
+                <span>
+                  {time && time.minutesString ? time.minutesString : "00"}
+                </span>{" "}
+                :{" "}
+                <span>
+                  {time && time.secondsString ? time.secondsString : "00"}
+                </span>
               </Link>
             </div>
           </div>
@@ -138,55 +115,44 @@ function Quiz() {
       </header>
       <div className={styles.container}>
         <div>
-          <strong>{currentQuestion + 1}. </strong>
-          {testData && testData.questions[currentQuestion].question}
+          <strong>Q{currentQuestion + 1}. </strong>{" "}
+          {testData.questions[currentQuestion].question}
         </div>
         <div className={styles.options}>
           <ul>
-            {testData &&
-              testData.questions[currentQuestion].options.map(
-                (option, index) => {
-                  return (
-                    <li
-                      key={index}
-                      style={{
-                        backgroundColor:
-                          option.isAnswer && showSolutions && "green",
-                      }}
-                      className={
-                        colorCodeCorrectAndWrongAnswer(option, index)
-                          ? styles.chosenOption
-                          : ""
-                      }
-                    >
-                      <input
-                        type="radio"
-                        id={`option` + (index + 1)}
-                        name="option"
-                        value={option.text}
-                        checked={chosenOption === index}
-                        onChange={() => {
-                          setIsCorrect(option.isAnswer);
-                          setChosenOption(index);
-                        }}
-                      />
-                      <label htmlFor={`option` + (index + 1)}>
-                        {option.text}
-                      </label>
-                    </li>
-                  );
-                }
-              )}
+            {testData.questions[currentQuestion].options.map(
+              (option, index) => {
+                return (
+                  <li
+                    key={index}
+                    style={{
+                      backgroundColor: submit && option.isAnswer ? "green" : "",
+                    }}
+                    className={
+                      submit &&
+                      !option.isAnswer &&
+                      (index === chosenOption ? styles.chosenOption : "")
+                    }
+                  >
+                    <input
+                      type="radio"
+                      name="option"
+                      id={"option" + index}
+                      onChange={() => handleChange(index)}
+                      value={option.text}
+                      checked={index === chosenOption}
+                      disabled={showSolutions}
+                    />
+                    <label htmlFor={"option" + index}>{option.text}</label>
+                  </li>
+                );
+              }
+            )}
           </ul>
         </div>
         <div className={styles.footer}>
           <button onClick={onPrevious}>Previous</button>
-          <button onClick={onNext}>
-            {currentQuestion == (testData && testData.questions.length) - 1 &&
-            !submit
-              ? "Submit"
-              : "Save & Next"}
-          </button>
+          <button onClick={onNext}>Save & Next</button>
         </div>
       </div>
     </div>
