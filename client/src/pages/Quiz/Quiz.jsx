@@ -5,7 +5,6 @@ import axios from "axios";
 import styles from "./Quiz.module.css";
 import useCountDown from "../../Hooks/useCountDown";
 import secondsToTime from "../../utils/timeConversion";
-import Loader from "../../components/Loader/Loader";
 
 import { API_ENDPOINTS } from "../../utils/constants";
 
