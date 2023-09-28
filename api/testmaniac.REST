@@ -4,6 +4,9 @@ GET http://127.0.0.1:8000/
 ### Get all tests
 GET http://127.0.0.1:8000/tests
 
+### Get a test by id
+GET http://127.0.0.1:8000/tests/6514843bd5f73b9e7ed385ba
+
 ### crate a test
 POST http://127.0.0.1:8000/tests/create
 Content-Type: application/json
@@ -28,7 +31,7 @@ Content-Type: application/json
 DELETE http://127.0.0.1:8000/tests/650ae323204e4e0860e5dcc8
 
 ### get all questions
-GET http://127.0.0.1:8000/questions
+GET http://127.0.0.1:8000/questions/6514843bd5f73b9e7ed385ba
 
 ### append questions
 POST http://127.0.0.1:8000/questions/add/650746f8597a3bfce666b03c

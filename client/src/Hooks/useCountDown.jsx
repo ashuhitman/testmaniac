@@ -6,6 +6,10 @@ export default function useCountDown(initialState) {
   const [isTimeLeft, setIsTimeLeft] = useState(true);
 
   useEffect(() => {
+    if (seconds === undefined || seconds === null) {
+      setSeconds(0);
+      return;
+    }
     if (seconds === 0) {
       setIsTimeLeft(false);
       return;
@@ -13,14 +17,12 @@ export default function useCountDown(initialState) {
     const timeout = setTimeout(() => {
       setSeconds(seconds - 1);
     }, 1000);
-    return () => {
-      clearTimeout(timeout);
-    };
+    return () => clearTimeout(timeout);
   }, [seconds]);
 
-  const reset = () => {
-    setSeconds(0);
-  };
+  const reset = () => setSeconds(0);
+
+  const set = (seconds) => setSeconds(seconds);
 
   return [isTimeLeft, reset, secondsToTime(seconds)];
 }

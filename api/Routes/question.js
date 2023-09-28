@@ -5,9 +5,11 @@ import Test from "../Models/Test.js";
 const router = Router();
 
 // get all questions
-router.get("/", async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
-    const result = await Test.findOne(req.params.id).select("questions");
+    const result = await Test.findOne({ _id: req.params.id }).select(
+      "questions"
+    );
     if (result.questions.length === 0)
       return res.send({ error: "No question was found" });
     return res.send(result);

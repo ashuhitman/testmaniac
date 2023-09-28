@@ -12,6 +12,15 @@ router.get("/", async (req, res) => {
     res.send({ error: error.message });
   }
 });
+// fetch a test by id
+router.get("/:id", async (req, res) => {
+  try {
+    const tests = await Test.findOne({ _id: req.params.id });
+    res.send(tests);
+  } catch (error) {
+    res.send({ error: error.message });
+  }
+});
 // add test
 router.post("/create", async (req, res) => {
   try {
