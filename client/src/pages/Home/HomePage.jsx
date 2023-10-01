@@ -29,7 +29,7 @@ function HomePage() {
       <div className="test-container">
         {tests.map((test, index) =>
           test.questions.length === 0 ? (
-            <div key={index}></div>
+            ""
           ) : (
             <TestCard key={index} cardData={test} />
           )
