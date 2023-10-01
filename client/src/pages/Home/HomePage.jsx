@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Modal from "../../Components/Modal/Modal";
 import Button from "../../Components/Button/Button";
 import "./HomePage.css";
@@ -11,6 +11,7 @@ import HomePageLoader from "../../Components/HomePageLoader/HomePageLoader";
 
 function HomePage() {
   const [tests, setTests] = useState([]);
+
   useEffect(() => {
     axios
       .get(API_ENDPOINTS.TESTS)
@@ -26,9 +27,13 @@ function HomePage() {
     <div className="container">
       <Header />
       <div className="test-container">
-        {tests.map((test, index) => (
-          <TestCard key={index} cardData={test} />
-        ))}
+        {tests.map((test, index) =>
+          test.questions.length === 0 ? (
+            <div key={index}></div>
+          ) : (
+            <TestCard key={index} cardData={test} />
+          )
+        )}
       </div>
     </div>
   );

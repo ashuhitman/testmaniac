@@ -10,11 +10,16 @@ function Alert({
   handleLeft = null,
   leftText,
   rightText = "OK",
+  bgColor = "#2c3e50",
+  color = "white",
 }) {
   if (!show) return <></>;
   return (
     <div className={styles.overlay}>
-      <div className={styles.alert}>
+      <div
+        className={styles.alert}
+        style={{ backgroundColor: bgColor, color: color }}
+      >
         <div className={styles.alertHead}>{title}</div>
         <div className={styles.alertBody}>{body}</div>
         <div className={styles.alertFooter}>

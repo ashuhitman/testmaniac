@@ -1,12 +1,16 @@
-import React from "react";
+import React, { useContext } from "react";
 import styles from "./TestCard.module.css";
 import { useNavigate } from "react-router-dom";
+import TestContext from "../../context/Test/TestContext";
+import { actions } from "../../context/Test/TestState";
 
 function TestCard({ cardData }) {
   const navigate = useNavigate();
   const { _id, testName, timer, questionAmount, subject, questions } = cardData;
+  const { testState, dispatch } = useContext(TestContext);
   const goToQuizPage = () => {
-    navigate(`/quiz/${_id}`, { state: cardData });
+    dispatch({ type: actions.reset });
+    navigate(`/tests/${_id}`, { state: cardData });
   };
   return (
     <div className={styles.card}>

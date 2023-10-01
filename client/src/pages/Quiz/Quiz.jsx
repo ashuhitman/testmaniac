@@ -1,6 +1,7 @@
-import React, { useEffect, useRef, useState } from "react";
-import { useLocation, Link, useParams } from "react-router-dom";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import { useLocation, Link, useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { BiArrowBack } from "react-icons/bi";
 
 import styles from "./Quiz.module.css";
 import useCountDown from "../../Hooks/useCountDown";
@@ -9,7 +10,13 @@ import secondsToTime from "../../utils/timeConversion";
 import { API_ENDPOINTS } from "../../utils/constants";
 import Alert from "../../Components/Alert/Alert";
 
+import TestContext from "../../context/Test/TestContext";
+import { actions } from "../../context/Test/TestState";
+
 function Quiz() {
+  const { testState, dispatch } = useContext(TestContext);
+  const showSolution = testState.showSolution;
+  const navigate = useNavigate();
   // get test data
   const { state } = useLocation();
   // get document id
@@ -17,43 +24,74 @@ function Quiz() {
   const [testData, setTestData] = useState(state || null);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [isTimeLeft, set, reset, time] = useCountDown(null);
-  const [chosenOption, selectChosenOption] = useState();
-  const [chosenOptions, selectChosenOptions] = useState([]);
+  const [chosenOption, setChosenOption] = useState();
+  const [chosenOptions, setChosenOptions] = useState([]);
+  const [correctAnswers, setCorrectAnswers] = useState([]);
   const [submit, setSubmit] = useState();
-  const [showSolutions, setShowSolutions] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
 
   useEffect(() => {
-    if (!testData) {
-      setTimeout(() => {}, 30000);
-      axios(`${API_ENDPOINTS.TESTS}/${docId}`)
-        .then((response) => {
-          const data = response.data;
-          // set test data
-          setTestData(data);
-          console.log("success", response);
-          // set timer
-          set(parseInt(data.timer) * 60);
-        })
-        .catch((error) => {
-          console.log("error", error);
-        });
+    console.log("Quiz: ", testState);
+    if (showSolution) {
+      reset();
+      setChosenOptions(testState.chosenOptions);
+      setCorrectAnswers(testState.correctOptions);
+      setTestData(testState.test);
     } else {
-      console.log("set clock");
-      set(parseInt(testData.timer) * 60);
+      const test = testState.test;
+      if (test) {
+        setTestData(test);
+        // set timer
+        set(parseInt(test.timer) * 60);
+      } else {
+        if (!testData) {
+          console.log(testData);
+          axios(`${API_ENDPOINTS.TESTS}/${docId}`)
+            .then((response) => {
+              const data = response.data;
+              // set test data
+              setTestData(data);
+              console.log("success", response);
+              // set timer
+              set(parseInt(data.timer) * 60);
+            })
+            .catch((error) => {
+              console.log("error", error);
+            });
+        } else {
+          // set the clock
+          set(parseInt(testData.timer) * 60);
+        }
+      }
     }
   }, []);
 
   useEffect(() => {
-    if (!isTimeLeft && !submit) {
+    if (!isTimeLeft && !submit && showSolution) {
+      console.log(submit);
       setSubmit(true);
     }
-    if (submit) {
-      console.log("submit quiz");
-      reset();
-      setShowSolutions(true);
+    if (submit && !showSolution) {
+      dispatch({
+        type: actions.submit_test,
+        payload: {
+          chosenOptions,
+          correctOptions: correctAnswers,
+          data: testData,
+        },
+      });
+      console.log("submitting...");
+      console.log("time", time);
+      const analytics = analyzeData(
+        chosenOptions,
+        correctAnswers,
+        time,
+        testData.timer
+      );
+
+      navigate(`/tests/${docId}/result`, { state: analytics });
     }
-    selectChosenOption(chosenOptions[currentQuestion]);
+    setChosenOption(chosenOptions[currentQuestion]);
   }, [submit, isTimeLeft, currentQuestion]);
 
   const showHandler = (show) => {
@@ -65,9 +103,19 @@ function Quiz() {
     // submit = false, then add chosen option
     if (!submit) {
       chosenOptions[currentQuestion] = chosenOption;
-      selectChosenOptions(chosenOptions);
+      setChosenOptions(chosenOptions);
+
       if (currentQuestion < totalQuestions - 1) {
-        selectChosenOption();
+        setChosenOption();
+      }
+      let i = 0;
+      for (let option of testData.questions[currentQuestion].options) {
+        console.log(option);
+        if (option.isAnswer) {
+          correctAnswers[currentQuestion] = i;
+          setCorrectAnswers(correctAnswers);
+        }
+        i = i + 1;
       }
     }
     // submit = true
@@ -82,8 +130,9 @@ function Quiz() {
   };
 
   const handleChange = (index) => {
-    selectChosenOption(index);
+    setChosenOption(index);
   };
+
   if (!testData) {
     return (
       <div style={{ color: "black" }}>
@@ -91,6 +140,7 @@ function Quiz() {
       </div>
     );
   }
+
   return (
     <div className={styles.quiz}>
       <Alert
@@ -105,25 +155,30 @@ function Quiz() {
       <header className={styles["quiz-header"]}>
         <div className={styles.navbar}>
           <div className={styles.logo}>
+            <Link to="/">
+              <BiArrowBack />
+            </Link>{" "}
             {testData.testName} ({testData.subject})
           </div>
           <div className={styles.links}>
-            <div>
-              <Link className={styles.link}>
-                <span className={styles.timeLeft}>Time Left</span>{" "}
-                <span>
-                  {time && time.hoursString ? time.hoursString : "00"}
-                </span>{" "}
-                :{" "}
-                <span>
-                  {time && time.minutesString ? time.minutesString : "00"}
-                </span>{" "}
-                :{" "}
-                <span>
-                  {time && time.secondsString ? time.secondsString : "00"}
-                </span>
-              </Link>
-            </div>
+            {!showSolution && (
+              <div>
+                <Link className={styles.link}>
+                  <span className={styles.timeLeft}>Time Left</span>{" "}
+                  <span>
+                    {time && time.hoursString ? time.hoursString : "00"}
+                  </span>{" "}
+                  :{" "}
+                  <span>
+                    {time && time.minutesString ? time.minutesString : "00"}
+                  </span>{" "}
+                  :{" "}
+                  <span>
+                    {time && time.secondsString ? time.secondsString : "00"}
+                  </span>
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </header>
@@ -140,12 +195,15 @@ function Quiz() {
                   <li
                     key={index}
                     style={{
-                      backgroundColor: submit && option.isAnswer ? "green" : "",
+                      backgroundColor:
+                        showSolution && option.isAnswer ? "green" : "",
                     }}
                     className={
-                      submit &&
-                      !option.isAnswer &&
-                      (index === chosenOption ? styles.chosenOption : "")
+                      showSolution && !option.isAnswer
+                        ? index === chosenOption
+                          ? styles.chosenOption
+                          : ""
+                        : ""
                     }
                   >
                     <input
@@ -155,7 +213,7 @@ function Quiz() {
                       onChange={() => handleChange(index)}
                       value={option.text}
                       checked={index === chosenOption}
-                      disabled={showSolutions}
+                      disabled={showSolution}
                     />
                     <label htmlFor={"option" + index}>{option.text}</label>
                   </li>
@@ -172,5 +230,37 @@ function Quiz() {
     </div>
   );
 }
+
+const analyzeData = (chosenOptions, correctOptions, time, totalTime) => {
+  const totalQuestions = chosenOptions.length;
+
+  let attempted = 0;
+  let correct = 0;
+  let wrong = 0;
+  for (let i = 0; i < totalQuestions; i++) {
+    if (chosenOptions[i] !== undefined) {
+      attempted = attempted + 1;
+      if (chosenOptions[i] === correctOptions[i]) {
+        correct = correct + 1;
+      } else {
+        wrong = wrong + 1;
+      }
+    }
+  }
+  const score = correct - wrong;
+  const accuracy = (correct * 100) / totalQuestions;
+
+  // calaculate time left
+  const { hoursString, minutesString, secondsString } = time;
+
+  const leftSeconds =
+    parseInt(hoursString) * 60 * 60 +
+    parseInt(minutesString) * 60 +
+    parseInt(secondsString);
+  const timeTaken = secondsToTime(parseInt(totalTime) * 60 - leftSeconds);
+  console.log(leftSeconds);
+
+  return [score, attempted, accuracy, totalQuestions, timeTaken, totalTime];
+};
 
 export default Quiz;

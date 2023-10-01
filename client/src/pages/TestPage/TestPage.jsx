@@ -2,16 +2,23 @@ import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import "./TestPage.css";
 import Button from "../../Components/Button/Button";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { test_page_validation } from "../../utils/validation";
+import Alert from "../../Components/Alert/Alert";
+import useNetwork from "../../Hooks/useNetwork";
 
 function TestPage() {
+  const navigate = useNavigate();
   const location = useLocation();
-  const noOfQuestions = parseInt(location.state.testData.questionAmount);
+
+  // const [isLoading, testDat] = useNetwork(location);
   const testId = location.state.testData._id;
+  const noOfQuestions = parseInt(location.state.testData.questionAmount);
+
   const lastVisistedQuestions = useRef(0);
   const [currentQuestion, setCurrentQuestion] = useState(1);
   const [submit, setSubmit] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
 
   const [formErrors, setFormErrors] = useState({
     question: "",
@@ -155,19 +162,33 @@ function TestPage() {
   const onSubmit = (e) => {
     e.preventDefault();
     if (currentQuestion + 1 < noOfQuestions) return;
-    console.log("go to score page");
+    setShowAlert(true);
+  };
+
+  const addQuestions = async () => {
     const apiUrl = `https://test-maniac.onrender.com/questions/add/${testId}`;
-    axios
-      .post(apiUrl, testData)
-      .then((response) => {
-        console.log("API Response:", response.data);
-        // navigate("/tests/create", { state: { formValues } });
-      })
-      .catch((error) => console.error("Error", error));
+    try {
+      const result = await axios.post(apiUrl, testData);
+      console.log("result: " + result);
+      if (result) {
+        navigate("/");
+      }
+    } catch (error) {
+      console.error("Error", error);
+    }
   };
 
   return (
     <div className="form-container">
+      <Alert
+        show={showAlert}
+        title="Add Questions"
+        body="Are you sure you want to submit?"
+        handleLeft={addQuestions}
+        leftText="Yes"
+        rightText="No"
+        showHandler={() => setShowAlert(false)}
+      />
       <form onSubmit={onSubmit}>
         <div className="form-group question-title">
           <div>
