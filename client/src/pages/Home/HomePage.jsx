@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import Modal from "../../Components/Modal/Modal";
-import Button from "../../Components/Button/Button";
+
 import "./HomePage.css";
 import Loader from "../../Components/Loader/Loader";
 import Header from "../../Components/Header/Header";

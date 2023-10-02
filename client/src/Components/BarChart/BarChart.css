@@ -1,0 +1,9 @@
+.bar-chart {
+  flex: 1;
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+}
+.chart-container h2 {
+  display: none !important;
+}

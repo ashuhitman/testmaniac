@@ -1,19 +1,36 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import styles from "./ScorePage.module.css";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
+import Chart from "chart.js/auto";
+import { CategoryScale } from "chart.js";
 
 import { actions } from "../../context/Test/TestState";
 import TestContext from "../../context/Test/TestContext";
+import { BarChart } from "../../Components/BarChart/BarChart";
+
+Chart.register(CategoryScale);
 
 function ScorePage() {
-  const navigate = useNavigate();
-  const { docId } = useParams();
   // get data passed from previous page
   const { state } = useLocation();
-  const [score, attempted, accuracy, totalQuestions, timeTaken, totalTime] =
-    state;
+
+  const [
+    score,
+    attempted,
+    accuracy,
+    totalQuestions,
+    timeTaken,
+    totalTime,
+    data,
+  ] = state;
+
+  const [chartData, setChartData] = useState(data);
+  const navigate = useNavigate();
+  const { docId } = useParams();
+
   // context
   const { testState, dispatch } = useContext(TestContext);
+
   return (
     <div className={styles.scoreBox}>
       <div className={styles.scorePage}>
@@ -44,7 +61,9 @@ function ScorePage() {
           </div>
         </div>
         <div className={styles.chartSection}>
-          <div className={styles.chartHeader}>Question Distribution</div>
+          {/* <div className={styles.chartHeader}>Question Distribution</div> */}
+
+          <BarChart chartData={chartData} />
         </div>
         <div className={styles.scoreFooter}>
           <button

@@ -259,8 +259,33 @@ const analyzeData = (chosenOptions, correctOptions, time, totalTime) => {
     parseInt(secondsString);
   const timeTaken = secondsToTime(parseInt(totalTime) * 60 - leftSeconds);
   console.log(leftSeconds);
+  const data = {
+    labels: ["Attempted", "Correct", "Wrong"],
+    // datasets is an array of objects where each object represents a set of data to display corresponding to the labels above. for brevity, we'll keep it at one object
+    datasets: [
+      {
+        label: "Question Distribution",
+        data: [attempted, correct, wrong],
+        // you can set indiviual colors for each bar
+        backgroundColor: [
+          "rgba(200, 255, 255, 0.6)",
+          "rgba(255, 200, 255, 0.6)",
+          "rgba(255, 255, 200, 0.6)",
+        ],
+        borderWidth: 1,
+      },
+    ],
+  };
 
-  return [score, attempted, accuracy, totalQuestions, timeTaken, totalTime];
+  return [
+    score,
+    attempted,
+    accuracy,
+    totalQuestions,
+    timeTaken,
+    totalTime,
+    data,
+  ];
 };
 
 export default Quiz;

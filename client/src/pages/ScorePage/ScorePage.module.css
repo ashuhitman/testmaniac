@@ -23,17 +23,26 @@
   font-size: 1.2em;
   font-weight: bold;
 }
+
 .summary {
-  background-color: #2c3e50;
   display: flex;
-  border-top: 1px solid white;
+  width: 100%;
 }
 
 .section {
+  flex: 1;
+  background-color: #2c3e50;
   display: flex;
   flex-direction: column;
-  flex: 1;
   border-right: 1px solid white;
+}
+.section > div:first-child {
+  font-weight: bold;
+  text-align: center;
+}
+.section > div:last-child {
+  text-align: center;
+  flex: 1;
 }
 .section:last-child {
   border: none;
@@ -41,9 +50,17 @@
 
 .section div {
   padding: 10px;
-  border-bottom: 1px solid white;
 }
-.chartSectiion {
+.chartSection {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.chartBody {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
 }
 .chartHeader {
   padding-top: 10px;
@@ -65,6 +82,8 @@
   cursor: pointer;
   border: none;
   border-radius: 4px;
+  background-color: #2c3e50;
+  color: white;
 }
 .scoreFooter button:hover {
   background-color: #636e72;
