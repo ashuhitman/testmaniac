@@ -273,6 +273,7 @@ const analyzeData = (chosenOptions, correctOptions, time, totalTime) => {
           "rgba(255, 255, 200, 0.6)",
         ],
         borderWidth: 1,
+        barPercentage: 0.5,
       },
     ],
   };
