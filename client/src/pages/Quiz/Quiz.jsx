@@ -158,7 +158,8 @@ function Quiz() {
             <Link to="/">
               <BiArrowBack />
             </Link>{" "}
-            {testData.testName} ({testData.subject})
+            {testData.testName}
+            {/* <br /> ({testData.subject}) */}
           </div>
           <div className={styles.links}>
             {!showSolution && (
@@ -248,7 +249,7 @@ const analyzeData = (chosenOptions, correctOptions, time, totalTime) => {
     }
   }
   const score = correct - wrong;
-  const accuracy = (correct * 100) / totalQuestions;
+  const accuracy = Math.round((correct * 1000) / totalQuestions) / 10;
 
   // calaculate time left
   const { hoursString, minutesString, secondsString } = time;

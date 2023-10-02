@@ -67,6 +67,9 @@
 .options li:hover {
   background-color: beige;
 }
+.options input {
+  margin-right: 5px;
+}
 .options input:focus {
   outline: none;
 }
