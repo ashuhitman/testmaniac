@@ -39,6 +39,7 @@
 .section > div:first-child {
   font-weight: bold;
   text-align: center;
+  border-bottom: 1px solid white;
 }
 .section > div:last-child {
   text-align: center;

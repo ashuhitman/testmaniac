@@ -5,6 +5,7 @@ import TestPage from "./pages/TestPage/TestPage";
 import Quiz from "./pages/Quiz/Quiz";
 import ScorePage from "./pages/ScorePage/ScorePage";
 import QuizState from "./context/Test/TestState";
+import Auth from "./pages/Auth/Auth";
 
 function App() {
   const routes = [
@@ -26,6 +27,11 @@ function App() {
     {
       path: "/tests/:docId/result",
       element: <ScorePage />,
+      requiresAuth: false,
+    },
+    {
+      path: "/auth",
+      element: <Auth />,
       requiresAuth: false,
     },
   ];

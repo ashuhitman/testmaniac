@@ -22,7 +22,9 @@ function Header() {
           </Link>
         </div>
         <div>
-          <Link className={styles.link}>Login</Link>
+          <Link to="/auth" className={styles.link}>
+            Login
+          </Link>
         </div>
         <div>
           <Link className={styles.link}>Signup</Link>

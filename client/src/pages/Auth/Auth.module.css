@@ -1,0 +1,47 @@
+.authContainer {
+  color: black;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+}
+.authContainer > div {
+  margin: auto;
+  padding: 10px;
+  width: min(90%, 360px);
+  border: 2px solid #2c3e50;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  row-gap: 10px;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+.authContainer form {
+  display: flex;
+  flex-direction: column;
+  row-gap: 25px;
+}
+.authContainer input {
+  padding: 10px 8px;
+}
+
+.authContainer a {
+  font-size: 0.8em;
+  color: blue;
+  text-decoration: underline;
+  cursor: pointer;
+  margin: auto;
+}
+.authContainer button {
+  padding: 10px 8px;
+  background-color: #2c3e50;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.authContainer button:hover {
+  background-color: #344659;
+}

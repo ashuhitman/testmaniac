@@ -270,8 +270,8 @@ const analyzeData = (chosenOptions, correctOptions, time, totalTime) => {
         // you can set indiviual colors for each bar
         backgroundColor: [
           "rgba(200, 255, 255, 0.6)",
-          "rgba(255, 200, 255, 0.6)",
-          "rgba(255, 255, 200, 0.6)",
+          "rgba(0, 255, 0, 0.8)",
+          "rgba(255, 0, 0, 0.8)",
         ],
         borderWidth: 1,
         barPercentage: 0.5,
