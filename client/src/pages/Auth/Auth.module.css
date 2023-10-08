@@ -7,6 +7,7 @@
   right: 0;
   display: flex;
   align-items: center;
+  background-color: #95afc0;
 }
 .authContainer > div {
   margin: auto;
@@ -16,8 +17,8 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  row-gap: 10px;
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  background-color: white;
 }
 .authContainer form {
   display: flex;
@@ -34,6 +35,7 @@
   text-decoration: underline;
   cursor: pointer;
   margin: auto;
+  margin-top: 10px;
 }
 .authContainer button {
   padding: 10px 8px;
