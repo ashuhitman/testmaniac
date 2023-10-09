@@ -4,6 +4,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import testRouter from "./Routes/test.js";
 import questionRouter from "./Routes/question.js";
+import authRouter from "./Routes/auth.js";
 
 dotenv.config();
 
@@ -25,6 +26,7 @@ app.get("/", (req, res) => {
 
 app.use("/tests", testRouter);
 app.use("/questions", questionRouter);
+app.use("/auth", authRouter);
 
 // connect to momgodb and run server
 mongoose

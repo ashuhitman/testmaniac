@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import styles from "./Auth.module.css";
+import Input from "../../Components/Input/Input";
 
 function Auth() {
   const [isLogin, setIsLogin] = useState(true);
