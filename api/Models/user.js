@@ -4,7 +4,6 @@ const userSchema = mongoose.Schema({
   name: { type: String, trim: true },
   email: { type: String, required: [true, "Name is required"], trim: true },
   password: { type: String, required: [true, "Password is required"] },
-  repassword: { type: String },
   mobile: { type: String },
 });
 

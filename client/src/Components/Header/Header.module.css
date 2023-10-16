@@ -11,6 +11,7 @@
 }
 .logo {
   /* border: 1px solid white; */
+  font-family: "Open Sans";
   background-color: black;
   padding: 5px 10px;
   border-radius: 5px;

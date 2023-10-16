@@ -38,18 +38,18 @@ router.post("/signup", async (req, res) => {
   }
 });
 router.post("/login", async (req, res) => {
-  console.log(req.body);
   try {
     // distructure email and password
     const { email, password } = req.body;
     // encode password
     // check if user exists
-    const user = User.findOne({ email, password });
+    const user = await User.findOne({ email, password });
 
     if (user) {
       // if user exists
       // generate token and refresh token
-      return res.status(200).send({ success: "logged in successfully" });
+      console.log("user: ", user);
+      return res.status(200).send(user);
     } else {
       // if user not exists
       return res.status(404).send({ error: "User does not exist" });

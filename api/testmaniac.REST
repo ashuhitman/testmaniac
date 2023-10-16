@@ -113,7 +113,7 @@ Content-Type: application/json
     "mobile": "1223344557"
 }
 
-### signup
+### login
 POST http://127.0.0.1:8000/auth/login
 Content-Type: application/json
 

@@ -15,12 +15,12 @@ function Auth() {
         <div className={styles.loginContainer}>
           <h2>Login</h2>
           <form className={styles.loginForm}>
-            <input type="email" name="email" id="email" placeholder="email" />
+            <input type="email" name="email" id="email" placeholder="Email" />
             <input
               type="password"
               name="password"
               id="password"
-              placeholder="password"
+              placeholder="Password"
             />
             <button type="submit">LOGIN</button>
           </form>
@@ -30,11 +30,11 @@ function Auth() {
         <div className={styles.singUp}>
           <h2>Signup</h2>
           <form>
-            <input type="text" name="name" placeholder="name" />
-            <input type="email" name="email" placeholder="email" />
-            <input type="password" name="password" placeholder="password" />
+            <input type="text" name="name" placeholder="Name" />
+            <input type="email" name="email" placeholder="Email" />
+            <input type="password" name="password" placeholder="Password" />
             <input type="password" name="psd" placeholder="Re-enter password" />
-            <input type="text" name="mobileno" placeholder="mobile number" />
+            <input type="text" name="mobileno" placeholder="Mobile number" />
             <button type="submit">SIGN UP</button>
           </form>
           <a onClick={changeAuthState}>Already have an account? Login</a>
