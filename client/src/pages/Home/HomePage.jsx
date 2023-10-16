@@ -22,15 +22,6 @@ function HomePage() {
   }, []);
 
   if (tests.length === 0) {
-    console.log("loading...");
-    const cardData = {
-      _id: 0,
-      testName: "lrmdgd",
-      questionAmount: 2,
-      timer: "23",
-      subject: "jsndnsda",
-      options: [],
-    };
     return (
       <div className="container">
         <HomePageLoader />

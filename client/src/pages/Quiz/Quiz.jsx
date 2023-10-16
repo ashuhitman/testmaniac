@@ -183,6 +183,7 @@ function Quiz() {
           </div>
         </div>
       </header>
+      <div className={styles["sub-header"]}>{testData.subject}</div>
       <div className={styles.container}>
         <div>
           <strong>Q{currentQuestion + 1}. </strong>{" "}
