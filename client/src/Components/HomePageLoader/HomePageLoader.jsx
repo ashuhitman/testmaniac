@@ -14,8 +14,6 @@ function HomePageLoader() {
         <LoaderCard />
         <LoaderCard />
         <LoaderCard />
-        <LoaderCard />
-        <LoaderCard />
       </div>
     </div>
   );
