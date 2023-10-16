@@ -9,16 +9,28 @@ export const actions = {
   save_tests: "SAVE_TESTS",
   update_test: "UPDATE_TEST",
   restart_test: "RESTART_TEST",
+  update_test: "UPDATE_TESTS",
 };
 const intialState = {
   chosenOptions: [],
   correctOptions: [],
   showSolution: false,
   test: null,
+  tests: [],
 };
 const testReducer = (state, action) => {
   console.log(action);
   switch (action.type) {
+    case actions.save_tests:
+      return {
+        ...state,
+        tests: action.payload.tests,
+      };
+    case actions.save_tests:
+      return {
+        ...state,
+        tests: [...state.tests, action.payload.test],
+      };
     case actions.submit_test:
       return {
         chosenOptions: action.payload.chosenOptions,

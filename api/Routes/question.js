@@ -37,7 +37,7 @@ router.get("/:id", async (req, res) => {
 // append many questions
 router.post("/add/:id", async (req, res) => {
   try {
-    await Test.findOneAndUpdate(
+    const result = await Test.findOneAndUpdate(
       { _id: req.params["id"] },
       {
         $push: {
@@ -47,7 +47,11 @@ router.post("/add/:id", async (req, res) => {
         },
       }
     );
-    res.send({ success: "added successfully" });
+    if (result) {
+      res.status(200).send({ success: "added successfully", data: result });
+    } else {
+      res.status(500).send({ success: "Couldn't add data" });
+    }
   } catch (error) {
     res.send({ error: error.message });
   }
