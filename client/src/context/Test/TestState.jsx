@@ -9,7 +9,7 @@ export const actions = {
   save_tests: "SAVE_TESTS",
   update_test: "UPDATE_TEST",
   restart_test: "RESTART_TEST",
-  update_test: "UPDATE_TESTS",
+  update_tests: "UPDATE_TESTS",
 };
 const intialState = {
   chosenOptions: [],
@@ -26,7 +26,7 @@ const testReducer = (state, action) => {
         ...state,
         tests: action.payload.tests,
       };
-    case actions.save_tests:
+    case actions.update_tests:
       return {
         ...state,
         tests: [...state.tests, action.payload.test],

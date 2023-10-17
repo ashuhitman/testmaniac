@@ -45,10 +45,15 @@
   padding: 4px 4px;
   border-radius: 4px;
 }
-
-.container {
+.quiz-container {
   flex: 1;
+
+  display: flex;
+}
+
+.quiz-box {
   padding: 20px;
+  flex: 1;
   display: flex;
   flex-direction: column;
 }
@@ -78,6 +83,27 @@
   background-color: red;
   color: white;
 }
+.question-nos {
+  padding: 20px;
+  display: grid;
+  grid-template-columns: repeat(4, 30px);
+  grid-auto-rows: 30px;
+  gap: 20px;
+  background-color: #6e88a2;
+}
+.question-nos button {
+  border: none;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.active-question {
+  border-radius: 15px !important;
+}
+.attempted-question {
+}
+.not-visited-question {
+}
 .footer {
   display: flex;
   justify-content: space-between;
@@ -103,7 +129,6 @@
   display: flex;
   color: black;
   gap: 20px;
-  cursor: pointer;
   box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px,
     rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
 }

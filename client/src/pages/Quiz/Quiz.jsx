@@ -184,49 +184,62 @@ function Quiz() {
         </div>
       </header>
       <div className={styles["sub-header"]}>{testData.subject}</div>
-      <div className={styles.container}>
-        <div>
-          <strong>Q{currentQuestion + 1}. </strong>{" "}
-          {testData.questions[currentQuestion].question}
-        </div>
-        <div className={styles.options}>
-          <ul>
-            {testData.questions[currentQuestion].options.map(
-              (option, index) => {
-                return (
-                  <li
-                    key={index}
-                    style={{
-                      backgroundColor:
-                        showSolution && option.isAnswer ? "green" : "",
-                    }}
-                    className={
-                      showSolution && !option.isAnswer
-                        ? index === chosenOption
-                          ? styles.chosenOption
+      <div className={styles["quiz-container"]}>
+        <div className={styles["quiz-box"]}>
+          <div>
+            <strong>Q{currentQuestion + 1}. </strong>{" "}
+            {testData.questions[currentQuestion].question}
+          </div>
+          <div className={styles.options}>
+            <ul>
+              {testData.questions[currentQuestion].options.map(
+                (option, index) => {
+                  return (
+                    <li
+                      key={index}
+                      style={{
+                        backgroundColor:
+                          showSolution && option.isAnswer ? "green" : "",
+                      }}
+                      className={
+                        showSolution && !option.isAnswer
+                          ? index === chosenOption
+                            ? styles.chosenOption
+                            : ""
                           : ""
-                        : ""
-                    }
-                  >
-                    <input
-                      type="radio"
-                      name="option"
-                      id={"option" + index}
-                      onChange={() => handleChange(index)}
-                      value={option.text}
-                      checked={index === chosenOption}
-                      disabled={showSolution}
-                    />
-                    <label htmlFor={"option" + index}>{option.text}</label>
-                  </li>
-                );
-              }
-            )}
-          </ul>
+                      }
+                    >
+                      <input
+                        type="radio"
+                        name="option"
+                        id={"option" + index}
+                        onChange={() => handleChange(index)}
+                        value={option.text}
+                        checked={index === chosenOption}
+                        disabled={showSolution}
+                      />
+                      <label htmlFor={"option" + index}>{option.text}</label>
+                    </li>
+                  );
+                }
+              )}
+            </ul>
+          </div>
+          <div className={styles.footer}>
+            <button onClick={onPrevious}>Previous</button>
+            <button onClick={onNext}>Save & Next</button>
+          </div>
         </div>
-        <div className={styles.footer}>
-          <button onClick={onPrevious}>Previous</button>
-          <button onClick={onNext}>Save & Next</button>
+        <div className={styles["question-nos"]}>
+          {[...Array(testData.questions.length)].map((e, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrentQuestion(i)}
+              className={currentQuestion === i ? styles["active-question"] : ""}
+            >
+              {i + 1}
+            </button>
+          ))}
         </div>
       </div>
     </div>

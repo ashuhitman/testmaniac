@@ -6,7 +6,6 @@ import LoaderCard from "./LoaderCard";
 function HomePageLoader() {
   return (
     <div>
-      <Header />
       <div className="test-container">
         <LoaderCard />
         <LoaderCard />

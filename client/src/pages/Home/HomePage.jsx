@@ -32,13 +32,6 @@ function HomePage() {
       .catch((error) => console.log(error));
   }, []);
 
-  if (testState.tests.length === 0) {
-    return (
-      <div className="container">
-        <HomePageLoader />
-      </div>
-    );
-  }
   return (
     <div className="container">
       <Header />
@@ -56,28 +49,34 @@ function HomePage() {
           Latest
         </button>
       </div>
-      <div className="test-container">
-        {testState.tests
-          .filter((test) => {
-            if (isLatest) {
-              console.log(
-                new Date(test.createdAt),
-                ystDate,
-                new Date(test.createdAt) >= ystDate
-              );
-              return new Date(test.createdAt) >= ystDate;
-            } else {
-              return true;
-            }
-          })
-          .map((test, index) =>
-            test.questions.length === 0 ? (
-              ""
-            ) : (
-              <TestCard key={index} cardData={test} />
-            )
-          )}
-      </div>
+      {testState.tests.length === 0 ? (
+        <div className="container">
+          <HomePageLoader />
+        </div>
+      ) : (
+        <div className="test-container">
+          {testState.tests
+            .filter((test) => {
+              if (isLatest) {
+                console.log(
+                  new Date(test.createdAt),
+                  ystDate,
+                  new Date(test.createdAt) >= ystDate
+                );
+                return new Date(test.createdAt) >= ystDate;
+              } else {
+                return true;
+              }
+            })
+            .map((test, index) =>
+              test.questions.length === 0 ? (
+                ""
+              ) : (
+                <TestCard key={index} cardData={test} />
+              )
+            )}
+        </div>
+      )}
     </div>
   );
 }

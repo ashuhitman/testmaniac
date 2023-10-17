@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import "./TestPage.css";
 import Button from "../../Components/Button/Button";
@@ -6,10 +6,14 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { test_page_validation } from "../../utils/validation";
 import Alert from "../../Components/Alert/Alert";
 import useNetwork from "../../Hooks/useNetwork";
+import { actions } from "../../context/Test/TestState";
+import TestContext from "../../context/Test/TestContext";
 
 function TestPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  // test context
+  const { testState, dispatch } = useContext(TestContext);
 
   // const [isLoading, testDat] = useNetwork(location);
   const testId = location.state.testData._id;
@@ -169,8 +173,12 @@ function TestPage() {
     const apiUrl = `https://test-maniac.onrender.com/questions/add/${testId}`;
     try {
       const result = await axios.post(apiUrl, testData);
-      console.log("result: " + result);
+      console.log("result: ", result);
       if (result) {
+        // get the data
+        const test = result.data.data;
+        test && dispatch({ action: actions.update_tests, payload: { test } });
+        // navigate to homepage
         navigate("/");
       }
     } catch (error) {
