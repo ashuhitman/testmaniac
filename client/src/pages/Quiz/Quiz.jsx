@@ -1,4 +1,10 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, {
+  useContext,
+  useEffect,
+  useReducer,
+  useRef,
+  useState,
+} from "react";
 import { useLocation, Link, useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { BiArrowBack } from "react-icons/bi";
@@ -15,6 +21,7 @@ import { actions } from "../../context/Test/TestState";
 
 function Quiz() {
   const { testState, dispatch } = useContext(TestContext);
+  const [quizState, quizDispatch] = useReducer();
   const showSolution = testState.showSolution;
   const navigate = useNavigate();
   // get test data
@@ -67,7 +74,7 @@ function Quiz() {
   }, []);
 
   useEffect(() => {
-    if (!isTimeLeft && !submit && showSolution) {
+    if (!isTimeLeft && !submit && !showSolution) {
       console.log(submit);
       setSubmit(true);
     }
@@ -86,7 +93,8 @@ function Quiz() {
         chosenOptions,
         correctAnswers,
         time,
-        testData.timer
+        testData.timer,
+        testData.questions.length
       );
 
       navigate(`/tests/${docId}/result`, { state: analytics });
@@ -196,6 +204,7 @@ function Quiz() {
                 (option, index) => {
                   return (
                     <li
+                      onClick={() => handleChange(index)}
                       key={index}
                       style={{
                         backgroundColor:
@@ -227,26 +236,41 @@ function Quiz() {
           </div>
           <div className={styles.footer}>
             <button onClick={onPrevious}>Previous</button>
+            <div>Re-attempt Questions</div>
             <button onClick={onNext}>Save & Next</button>
           </div>
         </div>
-        <div className={styles["question-nos"]}>
-          {[...Array(testData.questions.length)].map((e, i) => (
-            <button
-              key={i}
-              onClick={() => setCurrentQuestion(i)}
-              className={currentQuestion === i ? styles["active-question"] : ""}
-            >
-              {i + 1}
-            </button>
-          ))}
+        <div className={styles.sidebar}>
+          <div className={styles.profile}>
+            <div>Image</div>
+            <div>Student Name</div>
+          </div>
+          <div className={styles.sideUpper}>
+            <div>Answered</div>
+            <div>Not Answered</div>
+            <div>Not visited</div>
+          </div>
+          <div className={styles["question-nos"]}>
+            {[...Array(testData.questions.length)].map((e, i) => (
+              <button
+                key={i}
+                onClick={() => setCurrentQuestion(i)}
+                className={
+                  currentQuestion === i ? styles["active-question"] : ""
+                }
+              >
+                {i + 1}
+              </button>
+            ))}
+          </div>
+          <button className={styles.submitButton}>Submit Test</button>
         </div>
       </div>
     </div>
   );
 }
 
-const analyzeData = (chosenOptions, correctOptions, time, totalTime) => {
+const analyzeData = (chosenOptions, correctOptions, time, totalTime, total) => {
   const totalQuestions = chosenOptions.length;
 
   let attempted = 0;
@@ -293,15 +317,7 @@ const analyzeData = (chosenOptions, correctOptions, time, totalTime) => {
     ],
   };
 
-  return [
-    score,
-    attempted,
-    accuracy,
-    totalQuestions,
-    timeTaken,
-    totalTime,
-    data,
-  ];
+  return [score, attempted, accuracy, total, timeTaken, totalTime, data];
 };
 
 export default Quiz;

@@ -12,6 +12,7 @@ import { actions } from "../../context/Test/TestState";
 function HomePage() {
   // test context
   const { testState, dispatch } = useContext(TestContext);
+  console.log(testState);
   // get yesterday
   const ystDate = new Date(new Date().getTime() - 24 * 60 * 60 * 1000);
   const [tests, setTests] = useState([]);
@@ -19,6 +20,11 @@ function HomePage() {
   // console.log(tests);
 
   useEffect(() => {
+    if (testState.tests.length > 0) {
+      return;
+    }
+
+    console.log("fetching test data ...");
     axios
       .get(API_ENDPOINTS.TESTS)
       .then((response) =>

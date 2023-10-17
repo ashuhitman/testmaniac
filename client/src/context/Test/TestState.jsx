@@ -33,6 +33,7 @@ const testReducer = (state, action) => {
       };
     case actions.submit_test:
       return {
+        ...state,
         chosenOptions: action.payload.chosenOptions,
         correctOptions: action.payload.correctOptions,
         test: action.payload.data,
