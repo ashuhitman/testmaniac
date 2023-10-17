@@ -127,7 +127,7 @@ function Quiz() {
       }
     }
     // submit = true
-    if (currentQuestion >= totalQuestions - 1 && !submit) setShowAlert(true);
+    if (currentQuestion >= totalQuestions - 1) setCurrentQuestion(0);
     // increment only if it is less than the number of questions
     if (currentQuestion < totalQuestions - 1) {
       setCurrentQuestion(currentQuestion + 1);
@@ -263,7 +263,14 @@ function Quiz() {
               </button>
             ))}
           </div>
-          <button className={styles.submitButton}>Submit Test</button>
+          <button
+            type="button"
+            disabled={testState.showSolution}
+            className={styles.submitButton}
+            onClick={() => !testState.showSolution && setShowAlert(true)}
+          >
+            Submit Test
+          </button>
         </div>
       </div>
     </div>

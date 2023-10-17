@@ -12,7 +12,7 @@ import { actions } from "../../context/Test/TestState";
 function HomePage() {
   // test context
   const { testState, dispatch } = useContext(TestContext);
-  console.log(testState);
+
   // get yesterday
   const ystDate = new Date(new Date().getTime() - 24 * 60 * 60 * 1000);
   const [tests, setTests] = useState([]);
@@ -20,6 +20,7 @@ function HomePage() {
   // console.log(tests);
 
   useEffect(() => {
+    console.log("homepage: ", testState);
     if (testState.tests.length > 0) {
       return;
     }
