@@ -9,7 +9,7 @@ function TestCard({ cardData }) {
   const { _id, testName, timer, questionAmount, subject, questions } = cardData;
   const { testState, dispatch } = useContext(TestContext);
   const goToQuizPage = () => {
-    dispatch({ type: actions.reset });
+    dispatch({ type: actions.reset, payload: { test: cardData } });
     navigate(`/tests/${_id}`, { state: cardData });
   };
   return (

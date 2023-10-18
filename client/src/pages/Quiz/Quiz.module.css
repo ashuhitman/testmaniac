@@ -114,7 +114,15 @@
 .sideUpper {
   border-bottom: 1px solid white;
   padding: 10px 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
 }
+.sideUpper > .circle > span {
+  height: 10px;
+  width: 10px;
+  border-radius: 50%;
+}
+
 .question-nos {
   padding: 20px;
   display: grid;
@@ -141,15 +149,19 @@
 .question-nos button {
   border: none;
   padding: 8px;
-  border-radius: 8px;
+  border-radius: 15px;
   cursor: pointer;
 }
 .active-question {
-  border-radius: 15px !important;
+  border-radius: 8px !important;
 }
 .attempted-question {
+  background-color: #27ae60;
+  color: white;
 }
-.not-visited-question {
+.not-attempted {
+  background-color: #e74c3c;
+  color: white;
 }
 .footer {
   display: flex;
@@ -184,7 +196,10 @@
   .timeLeft {
     display: none;
   }
-  .question-nos {
+  .sidebar {
     display: none;
+  }
+  .quiz-box {
+    margin-right: 0px;
   }
 }

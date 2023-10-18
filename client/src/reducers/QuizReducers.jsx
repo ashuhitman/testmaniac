@@ -1,42 +1,54 @@
-import React, { useReducer } from "react";
-const quizActions = {
+export const quizActions = {
   next_button: "NEXT_BUTTON",
   pre_button: "PRE_BUTTON",
   visit_question: "VISIT_QUESTION",
+  select_option: "SELECT_OPTION",
 };
-const intialState = {
-  correctoptions: [],
-  chosenOptions: [],
+// null means ->
+// undefined means ->
+export const quizintialState = {
+  answers: [],
   visitedQuestions: [],
-  chosenOption: undefined,
+  selectedOption: null,
+  visited: 0,
+  currentQuestion: 0,
 };
 const quizReducer = (state, action) => {
+  console.log("quizReducer:action ", action);
+
   switch (action.type) {
-    case action.next_button:
+    case quizActions.next_button:
       return {
         ...state,
-        chosenOption: action.payload.chosenOption,
-        chosenOptions: action.payload.chosenOptions,
+        answers: action.payload.answers,
         visitedQuestions: action.payload.visitedQuestions,
+        currentQuestion: action.payload.currentQuestion,
+        selectedOption: action.payload.selectedOption,
+        visited: action.payload.visited,
       };
-    case action.pre_button:
+    case quizActions.pre_button:
       return {
         ...state,
         visitedQuestions: action.payload.visitedQuestions,
+        currentQuestion: action.payload.currentQuestion,
+        selectedOption: action.payload.selectedOption,
       };
-    case action.pre_button:
+    case quizActions.visit_question:
+      console.log(quizActions.visit_question);
       return {
         ...state,
-        visitedQuestions: action.payload.visitedQuestions,
+        currentQuestion: action.payload.currentQuestion,
+        selectedOption: action.payload.selectedOption,
+        answers: action.payload.answers,
+      };
+    case quizActions.select_option:
+      return {
+        ...state,
+        selectedOption: action.payload.selectedOption,
       };
     default:
       return state;
   }
 };
 
-function QuizReducers() {
-  const [quizState, quizDispatch] = useReducer(quizReducer, intialState);
-  return [quizState, quizDispatch];
-}
-
-export default QuizReducers;
+export default quizReducer;

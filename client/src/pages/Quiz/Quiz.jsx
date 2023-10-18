@@ -17,141 +17,134 @@ import { API_ENDPOINTS } from "../../utils/constants";
 import Alert from "../../Components/Alert/Alert";
 
 import TestContext from "../../context/Test/TestContext";
+
+import quizReducer, {
+  quizActions,
+  quizintialState,
+} from "../../reducers/QuizReducers";
 import { actions } from "../../context/Test/TestState";
+import { getDefinedElemenentCount, visitedQuestion } from "../../utils/utils";
 
 function Quiz() {
   const { testState, dispatch } = useContext(TestContext);
-  const [quizState, quizDispatch] = useReducer();
-  const showSolution = testState.showSolution;
+  const [quizState, quizDispatch] = useReducer(quizReducer, quizintialState);
+  console.log("quiz initialized: ", quizState);
+
   const navigate = useNavigate();
-  // get test data
-  const { state } = useLocation();
   // get document id
   const { docId } = useParams();
-  const [testData, setTestData] = useState(state || null);
-  const [currentQuestion, setCurrentQuestion] = useState(0);
   const [isTimeLeft, set, reset, time] = useCountDown(null);
-  const [chosenOption, setChosenOption] = useState();
-  const [chosenOptions, setChosenOptions] = useState([]);
-  const [correctAnswers, setCorrectAnswers] = useState([]);
-  const [submit, setSubmit] = useState();
-  const [showAlert, setShowAlert] = useState(false);
-
   useEffect(() => {
-    console.log("Quiz: ", testState);
-    if (showSolution) {
-      reset();
-      setChosenOptions(testState.chosenOptions);
-      setCorrectAnswers(testState.correctOptions);
-      setTestData(testState.test);
-    } else {
-      const test = testState.test;
-      if (test) {
-        setTestData(test);
-        // set timer
-        set(parseInt(test.timer) * 60);
-      } else {
-        if (!testData) {
-          console.log(testData);
-          axios(`${API_ENDPOINTS.TESTS}/${docId}`)
-            .then((response) => {
-              const data = response.data;
-              // set test data
-              setTestData(data);
-              console.log("success", response);
-              // set timer
-              set(parseInt(data.timer) * 60);
-            })
-            .catch((error) => {
-              console.log("error", error);
-            });
-        } else {
-          // set the clock
-          set(parseInt(testData.timer) * 60);
-        }
-      }
-    }
+    // set timer
+    // set(parseInt(testState.test.timer) * 60);
   }, []);
-
-  useEffect(() => {
-    if (!isTimeLeft && !submit && !showSolution) {
-      console.log(submit);
-      setSubmit(true);
-    }
-    if (submit && !showSolution) {
-      dispatch({
-        type: actions.submit_test,
-        payload: {
-          chosenOptions,
-          correctOptions: correctAnswers,
-          data: testData,
-        },
-      });
-      console.log("submitting...");
-      console.log("time", time);
-      const analytics = analyzeData(
-        chosenOptions,
-        correctAnswers,
-        time,
-        testData.timer,
-        testData.questions.length
-      );
-
-      navigate(`/tests/${docId}/result`, { state: analytics });
-    }
-    setChosenOption(chosenOptions[currentQuestion]);
-  }, [submit, isTimeLeft, currentQuestion]);
-
-  const showHandler = (show) => {
-    setShowAlert(show);
-  };
-
-  const onNext = () => {
-    const totalQuestions = testData.questions.length;
-    // submit = false, then add chosen option
-    if (!submit) {
-      chosenOptions[currentQuestion] = chosenOption;
-      setChosenOptions(chosenOptions);
-
-      if (currentQuestion < totalQuestions - 1) {
-        setChosenOption();
-      }
-      let i = 0;
-      for (let option of testData.questions[currentQuestion].options) {
-        console.log(option);
-        if (option.isAnswer) {
-          correctAnswers[currentQuestion] = i;
-          setCorrectAnswers(correctAnswers);
-        }
-        i = i + 1;
-      }
-    }
-    // submit = true
-    if (currentQuestion >= totalQuestions - 1) setCurrentQuestion(0);
-    // increment only if it is less than the number of questions
-    if (currentQuestion < totalQuestions - 1) {
-      setCurrentQuestion(currentQuestion + 1);
-    }
-  };
+  // on previous button click
   const onPrevious = () => {
-    if (currentQuestion > 0) setCurrentQuestion(currentQuestion - 1);
-  };
+    let currentQuestion = quizState.currentQuestion;
+    // if current question is 1
+    if (currentQuestion === 0) return;
+    //else decrement current question
+    currentQuestion = currentQuestion - 1;
+    // visited question
+    // visited questions
+    const visitedQuestions = [...quizState.visitedQuestions];
+    visitedQuestions[currentQuestion] = currentQuestion;
+    // selected option
+    const answer = quizState.answers[currentQuestion];
+    const selectedOption = answer && answer.selectedOption;
 
-  const handleChange = (index) => {
-    setChosenOption(index);
+    quizDispatch({
+      type: quizActions.pre_button,
+      payload: { currentQuestion, visitedQuestions, selectedOption },
+    });
   };
+  // on next button click
+  const onNext = () => {
+    // if current question is equal to total question
+    //else increment current question
+    const currentQuestion = quizState.currentQuestion;
+    const nextQuestion =
+      quizState.currentQuestion === testState.test.questions.length - 1
+        ? 0
+        : quizState.currentQuestion + 1;
+    // visited questions
+    const visitedQuestions = [...quizState.visitedQuestions];
+    visitedQuestions[currentQuestion] = currentQuestion;
+    // answers
+    const options = testState.test.questions[quizState.currentQuestion].options;
+    const correctOption = options.find((option) => option.isAnswer);
+    const answers = [...quizState.answers];
+    answers[currentQuestion] = {
+      selectedOption: quizState.selectedOption,
+      correctAnswer: correctOption.text,
+    };
 
-  if (!testData) {
-    return (
-      <div style={{ color: "black" }}>
-        <p>loading...</p>
-      </div>
-    );
+    // selected option
+    const selectedOption = answers[nextQuestion]
+      ? answers[nextQuestion].selectedOption
+      : null;
+
+    quizDispatch({
+      type: quizActions.next_button,
+      payload: {
+        currentQuestion: nextQuestion,
+        visitedQuestions,
+        answers,
+        selectedOption,
+        visited: quizState.visited + 1,
+      },
+    });
+  };
+  // on option change or question no button click
+  const handleChange = (chosenOption) => {
+    // setSelectedOption(chosenOption);
+    quizDispatch({
+      type: quizActions.select_option,
+      payload: { selectedOption: chosenOption },
+    });
+  };
+  const questionButtonClasses = (i) => {
+    const currentQuestion = quizState.currentQuestion;
+    const activeClass = currentQuestion === i ? styles["active-question"] : "";
+    const answer = quizState.answers[i];
+    if (answer) {
+      const attemptedClass = answer.selectedOption
+        ? styles["attempted-question"]
+        : "";
+      const notAttemptedClass =
+        answer.selectedOption === null ? styles["not-attempted"] : "";
+      return `${activeClass} ${notAttemptedClass} ${attemptedClass}`;
+    }
+    return activeClass;
+  };
+  const handleQuestionButtonClick = (i) => {
+    const currentQuestion = quizState.currentQuestion;
+    // if same question
+    if (currentQuestion === i) return;
+    // else update current question
+    const answers = [...quizState.answers];
+    const answer = answers[i];
+    const selectedOption = answer ? answer.selectedOption : null;
+    const correctAnswer = answer ? answer.correctAnswer : null;
+
+    answers[i] = { selectedOption, correctAnswer };
+    quizDispatch({
+      type: quizActions.visit_question,
+      payload: {
+        currentQuestion: i,
+        selectedOption,
+        answers,
+        visited: quizState.visited + 1,
+      },
+    });
+  };
+  if (!testState.test) {
+    return <div style={{ color: "black" }}>Loading...</div>;
   }
 
   return (
     <div className={styles.quiz}>
-      <Alert
+      {/* <Alert
         show={showAlert}
         showHandler={showHandler}
         title="Submit Quiz"
@@ -159,18 +152,17 @@ function Quiz() {
         leftText="Yes"
         handleLeft={() => setSubmit(true)}
         rightText="No"
-      />
+      /> */}
       <header className={styles["quiz-header"]}>
         <div className={styles.navbar}>
           <div className={styles.logo}>
             <Link to="/">
               <BiArrowBack />
             </Link>{" "}
-            {testData.testName}
-            {/* <br /> ({testData.subject}) */}
+            {testState.test.testName}
           </div>
           <div className={styles.links}>
-            {!showSolution && (
+            {!testState.showSolution && (
               <div>
                 <Link className={styles.link}>
                   <span className={styles.timeLeft}>Time Left</span>{" "}
@@ -191,41 +183,28 @@ function Quiz() {
           </div>
         </div>
       </header>
-      <div className={styles["sub-header"]}>{testData.subject}</div>
+      <div className={styles["sub-header"]}>
+        Subject: {testState.test.subject}
+      </div>
       <div className={styles["quiz-container"]}>
         <div className={styles["quiz-box"]}>
           <div>
-            <strong>Q{currentQuestion + 1}. </strong>{" "}
-            {testData.questions[currentQuestion].question}
+            <strong>Q{quizState.currentQuestion + 1}. </strong>{" "}
+            {testState.test.questions[quizState.currentQuestion].question}
           </div>
           <div className={styles.options}>
             <ul>
-              {testData.questions[currentQuestion].options.map(
+              {testState.test.questions[quizState.currentQuestion].options.map(
                 (option, index) => {
                   return (
-                    <li
-                      onClick={() => handleChange(index)}
-                      key={index}
-                      style={{
-                        backgroundColor:
-                          showSolution && option.isAnswer ? "green" : "",
-                      }}
-                      className={
-                        showSolution && !option.isAnswer
-                          ? index === chosenOption
-                            ? styles.chosenOption
-                            : ""
-                          : ""
-                      }
-                    >
+                    <li onClick={() => handleChange(option.text)} key={index}>
                       <input
                         type="radio"
                         name="option"
                         id={"option" + index}
-                        onChange={() => handleChange(index)}
                         value={option.text}
-                        checked={index === chosenOption}
-                        disabled={showSolution}
+                        checked={quizState.selectedOption === option.text}
+                        onChange={(e) => handleChange(e.target.value)}
                       />
                       <label htmlFor={"option" + index}>{option.text}</label>
                     </li>
@@ -247,17 +226,33 @@ function Quiz() {
           </div>
           <div className={styles.sideUpper}>
             <div>Answered</div>
+            <div className={styles.circle}>
+              <span>{getDefinedElemenentCount(quizState.answers)}</span>
+            </div>
             <div>Not Answered</div>
-            <div>Not visited</div>
+            <div className={styles.circle}>
+              <span>
+                {" "}
+                {testState.test.questions.length -
+                  getDefinedElemenentCount(quizState.answers)}
+              </span>
+            </div>
+            <div>Not Visited</div>
+            <div className={styles.circle}>
+              <span>
+                {testState.test.questions.length -
+                  visitedQuestion(quizState.answers)}
+              </span>
+            </div>
           </div>
           <div className={styles["question-nos"]}>
-            {[...Array(testData.questions.length)].map((e, i) => (
+            {[...Array(testState.test.questions.length)].map((e, i) => (
               <button
                 key={i}
-                onClick={() => setCurrentQuestion(i)}
-                className={
-                  currentQuestion === i ? styles["active-question"] : ""
-                }
+                onClick={() => {
+                  handleQuestionButtonClick(i);
+                }}
+                className={questionButtonClasses(i)}
               >
                 {i + 1}
               </button>
@@ -276,55 +271,5 @@ function Quiz() {
     </div>
   );
 }
-
-const analyzeData = (chosenOptions, correctOptions, time, totalTime, total) => {
-  const totalQuestions = chosenOptions.length;
-
-  let attempted = 0;
-  let correct = 0;
-  let wrong = 0;
-  for (let i = 0; i < totalQuestions; i++) {
-    if (chosenOptions[i] !== undefined) {
-      attempted = attempted + 1;
-      if (chosenOptions[i] === correctOptions[i]) {
-        correct = correct + 1;
-      } else {
-        wrong = wrong + 1;
-      }
-    }
-  }
-  const score = correct - wrong;
-  const accuracy = Math.round((correct * 1000) / totalQuestions) / 10;
-
-  // calaculate time left
-  const { hoursString, minutesString, secondsString } = time;
-
-  const leftSeconds =
-    parseInt(hoursString) * 60 * 60 +
-    parseInt(minutesString) * 60 +
-    parseInt(secondsString);
-  const timeTaken = secondsToTime(parseInt(totalTime) * 60 - leftSeconds);
-  console.log(leftSeconds);
-  const data = {
-    labels: ["Attempted", "Correct", "Wrong"],
-    // datasets is an array of objects where each object represents a set of data to display corresponding to the labels above. for brevity, we'll keep it at one object
-    datasets: [
-      {
-        label: "Question Distribution",
-        data: [attempted, correct, wrong],
-        // you can set indiviual colors for each bar
-        backgroundColor: [
-          "rgba(200, 255, 255, 0.6)",
-          "rgba(0, 255, 0, 0.8)",
-          "rgba(255, 0, 0, 0.8)",
-        ],
-        borderWidth: 1,
-        barPercentage: 0.5,
-      },
-    ],
-  };
-
-  return [score, attempted, accuracy, total, timeTaken, totalTime, data];
-};
 
 export default Quiz;
