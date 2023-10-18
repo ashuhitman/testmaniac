@@ -10,7 +10,6 @@ export const quizActions = {
 // undefined means ->
 export const quizintialState = {
   answers: [],
-  visitedQuestions: [],
   selectedOption: null,
   visited: 0,
   currentQuestion: 0,
@@ -25,7 +24,7 @@ const quizReducer = (state, action) => {
       return {
         ...state,
         answers: action.payload.answers,
-        visitedQuestions: action.payload.visitedQuestions,
+
         currentQuestion: action.payload.currentQuestion,
         selectedOption: action.payload.selectedOption,
         visited: action.payload.visited,
@@ -33,7 +32,7 @@ const quizReducer = (state, action) => {
     case quizActions.pre_button:
       return {
         ...state,
-        visitedQuestions: action.payload.visitedQuestions,
+
         currentQuestion: action.payload.currentQuestion,
         selectedOption: action.payload.selectedOption,
         answers: action.payload.answers,

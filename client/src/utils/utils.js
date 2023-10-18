@@ -38,5 +38,5 @@ export const analytics = (answers, test) => {
   }
   const attempted = getDefinedElemenentCount(answers);
   const accuracy = Math.round((correct * 100 * 100) / attempted) / 100;
-  return { correct, wrong, attempted, accuracy, solutions };
+  return { correct, wrong, attempted, accuracy, totalQuestions, solutions };
 };

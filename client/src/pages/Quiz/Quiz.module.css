@@ -59,7 +59,7 @@
   flex-direction: column;
 }
 .shiftRight {
-  margin-right: 250px;
+  margin-right: 270px;
 }
 .shiftLeft {
   margin-left: 0px;
@@ -76,7 +76,8 @@
   flex: 1;
 }
 .options ul {
-  padding: 10px;
+  padding-top: 10px;
+  padding-left: 10px;
 }
 .options li {
   list-style-type: none;
@@ -109,14 +110,14 @@
   bottom: 0;
   top: 0;
   z-index: 10;
-  width: 250px;
+  width: 270px;
 }
 .showSidebar {
   animation: slidein 0.5s ease-in;
 }
 @keyframes slidein {
   0% {
-    right: -250px;
+    right: -270px;
   }
   100% {
     right: 0px;
@@ -139,14 +140,14 @@
   display: flex;
   gap: 20px;
   border-bottom: 1px solid white;
-  padding: 20px;
+  padding: 10px 20px;
+  font-size: 0.8em;
+  align-items: center;
 }
 .sideUpper {
   font-size: 0.8em;
   border-bottom: 1px solid white;
-
-  padding-top: 10px;
-  padding-bottom: 10px;
+  padding: 10px 10px;
   text-align: center;
 }
 
@@ -160,7 +161,7 @@
 .question-nos {
   padding: 20px;
   display: grid;
-  grid-template-columns: repeat(4, 30px);
+  grid-template-columns: repeat(5, 30px);
   grid-auto-rows: 30px;
   gap: 20px;
   flex: 1;
@@ -168,10 +169,9 @@
   animation: slide-in 0.2s ease-in;
 }
 .submitButton {
-  margin-bottom: 50px;
+  margin-bottom: 30px;
   margin-left: 20px;
   margin-right: 20px;
-  font-size: 1.1em;
   font-weight: bold;
   border: none;
   padding: 8px 8px;
@@ -215,7 +215,6 @@
   margin-bottom: 30px;
 }
 .footer button {
-  font-size: 1.1em;
   border: none;
   padding: 8px 8px;
   cursor: pointer;

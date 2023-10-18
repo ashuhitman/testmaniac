@@ -30,6 +30,7 @@ import {
   getDefinedElemenentCount,
   visitedQuestion,
 } from "../../utils/utils";
+import CircularImage from "../../Components/CircularImage/CircularImage";
 
 function Quiz() {
   const { testState, dispatch } = useContext(TestContext);
@@ -37,6 +38,7 @@ function Quiz() {
   const [showSidebar, setShowSidebar] = useState(true);
   const [showAlert, setShowAlert] = useState(false);
   const [submit, setSubmit] = useState(false);
+  const [reattempt, setReattempt] = useState(false);
   // console.log("quiz initialized: ", quizState);
 
   const navigate = useNavigate();
@@ -92,10 +94,7 @@ function Quiz() {
     if (currentQuestion === 0) return;
     //else decrement current question
     currentQuestion = currentQuestion - 1;
-    // visited question
-    // visited questions
-    const visitedQuestions = [...quizState.visitedQuestions];
-    visitedQuestions[currentQuestion] = currentQuestion;
+
     // selected option
     const answers = quizState.answers;
     const answer = answers[currentQuestion];
@@ -109,7 +108,7 @@ function Quiz() {
 
     quizDispatch({
       type: quizActions.pre_button,
-      payload: { currentQuestion, visitedQuestions, selectedOption, answers },
+      payload: { currentQuestion, selectedOption, answers },
     });
   };
   // on next button click
@@ -121,28 +120,28 @@ function Quiz() {
       quizState.currentQuestion === testState.test.questions.length - 1
         ? 0
         : quizState.currentQuestion + 1;
-    // visited questions
-    const visitedQuestions = [...quizState.visitedQuestions];
-    visitedQuestions[currentQuestion] = currentQuestion;
+
     // answers
     const options = testState.test.questions[quizState.currentQuestion].options;
     const correctOption = options.find((option) => option.isAnswer);
     const answers = [...quizState.answers];
-    answers[currentQuestion] = {
-      selectedOption: quizState.selectedOption,
-      correctAnswer: correctOption.text,
-    };
+    if (!reattempt) {
+      answers[currentQuestion] = {
+        selectedOption: quizState.selectedOption,
+        correctAnswer: correctOption.text,
+      };
+    }
 
     // selected option
-    const selectedOption = answers[nextQuestion]
-      ? answers[nextQuestion].selectedOption
-      : null;
+    const selectedOption =
+      !reattempt && answers[nextQuestion]
+        ? answers[nextQuestion].selectedOption
+        : null;
 
     quizDispatch({
       type: quizActions.next_button,
       payload: {
         currentQuestion: nextQuestion,
-        visitedQuestions,
         answers,
         selectedOption,
         visited: quizState.visited + 1,
@@ -159,11 +158,12 @@ function Quiz() {
     });
   };
   const questionButtonClasses = (i) => {
-    if (testState.showSolution) {
-      return;
-    }
     const currentQuestion = quizState.currentQuestion;
     const activeClass = currentQuestion === i ? styles["active-question"] : "";
+    if (testState.showSolution) {
+      return activeClass;
+    }
+
     const answer = quizState.answers[i];
     if (answer) {
       const attemptedClass = answer.selectedOption
@@ -354,8 +354,11 @@ function Quiz() {
             className={styles.close}
           />
           <div className={styles.profile}>
-            <div>Image</div>
-            <div>Student Name</div>
+            <CircularImage
+              size="30px"
+              imageUrl="https://sketchok.com/images/articles/02-comics/002-superheroes/132/16.jpg"
+            />
+            <div>Ashutsh Singh</div>
           </div>
           <div className={styles.sideUpper}>
             {!testState.showSolution ? (
@@ -388,6 +391,7 @@ function Quiz() {
                     <td>Correct</td>
                     <td>Wrong</td>
                     <td>Accuracy</td>
+                    <td>Score</td>
                   </tr>
                 </thead>
                 <tbody>
@@ -400,6 +404,14 @@ function Quiz() {
                     </th>
                     <th>
                       {testState.showSolution && testState.analytics.accuracy} %
+                    </th>
+                    <th>
+                      {testState.showSolution &&
+                        testState.analytics.correct -
+                          testState.analytics.wrong}{" "}
+                      /{" "}
+                      {testState.showSolution &&
+                        testState.analytics.totalQuestions}
                     </th>
                   </tr>
                 </tbody>
