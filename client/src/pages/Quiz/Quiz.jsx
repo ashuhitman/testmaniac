@@ -236,7 +236,7 @@ function Quiz() {
           </div>
           <div className={styles.footer}>
             <button onClick={onPrevious}>Previous</button>
-            <div>Re-attempt Questions</div>
+            {testState.showSolution && <div>Re-attempt Questions</div>}
             <button onClick={onNext}>Save & Next</button>
           </div>
         </div>
