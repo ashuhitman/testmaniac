@@ -12,11 +12,10 @@ export const actions = {
   update_tests: "UPDATE_TESTS",
 };
 const intialState = {
-  chosenOptions: [],
-  correctOptions: [],
   showSolution: false,
   test: null,
   tests: [],
+  analytics: null,
 };
 const testReducer = (state, action) => {
   console.log(action);
@@ -31,13 +30,16 @@ const testReducer = (state, action) => {
         ...state,
         tests: [...state.tests, action.payload.test],
       };
+    case actions.update_test:
+      return {
+        ...state,
+        test: action.payload.test,
+      };
     case actions.submit_test:
       return {
         ...state,
-        chosenOptions: action.payload.chosenOptions,
-        correctOptions: action.payload.correctOptions,
-        test: action.payload.data,
-        showSolution: false,
+        showSolution: true,
+        analytics: action.payload,
       };
     case actions.show_solution:
       return {

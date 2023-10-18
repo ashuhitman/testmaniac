@@ -4,6 +4,7 @@ export const quizActions = {
   visit_question: "VISIT_QUESTION",
   select_option: "SELECT_OPTION",
   clear_response: "CLEAR_RESPONSE",
+  submit_test: "SUBMIT_TEST",
 };
 // null means ->
 // undefined means ->
@@ -13,6 +14,8 @@ export const quizintialState = {
   selectedOption: null,
   visited: 0,
   currentQuestion: 0,
+  analytics: null,
+  showSolution: false,
 };
 const quizReducer = (state, action) => {
   console.log("quizReducer:action ", action);
@@ -53,6 +56,12 @@ const quizReducer = (state, action) => {
         ...state,
         answers: action.payload.answers,
         selectedOption: action.payload.selectedOption,
+      };
+    case quizActions.submit_test:
+      return {
+        ...state,
+        showSolution: true,
+        analytics: action.payload,
       };
     default:
       return state;

@@ -8,10 +8,8 @@ import React, {
 import { useLocation, Link, useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { BiArrowBack } from "react-icons/bi";
-import {
-  BiSolidChevronRightSquare,
-  BiSolidChevronLeftSquare,
-} from "react-icons/bi";
+import { BiSolidChevronRightSquare } from "react-icons/bi";
+import { CgMenu } from "react-icons/cg";
 
 import styles from "./Quiz.module.css";
 import useCountDown from "../../Hooks/useCountDown";
@@ -27,13 +25,19 @@ import quizReducer, {
   quizintialState,
 } from "../../reducers/QuizReducers";
 import { actions } from "../../context/Test/TestState";
-import { getDefinedElemenentCount, visitedQuestion } from "../../utils/utils";
+import {
+  analytics,
+  getDefinedElemenentCount,
+  visitedQuestion,
+} from "../../utils/utils";
 
 function Quiz() {
   const { testState, dispatch } = useContext(TestContext);
   const [quizState, quizDispatch] = useReducer(quizReducer, quizintialState);
   const [showSidebar, setShowSidebar] = useState(true);
-  console.log("quiz initialized: ", quizState);
+  const [showAlert, setShowAlert] = useState(false);
+  const [submit, setSubmit] = useState(false);
+  // console.log("quiz initialized: ", quizState);
 
   const navigate = useNavigate();
   // get document id
@@ -41,8 +45,46 @@ function Quiz() {
   const [isTimeLeft, set, reset, time] = useCountDown(null);
   useEffect(() => {
     // set timer
-    // set(parseInt(testState.test.timer) * 60);
+    if (testState.test) {
+      set(parseInt(testState.test.timer) * 60);
+    } else {
+      console.log("loading test state");
+      // if test data not available then fetch it
+      axios(`${API_ENDPOINTS.TESTS}/${docId}`)
+        .then((response) => {
+          console.log(response.data);
+          const test = response.data;
+          // set test data
+          dispatch({ type: actions.update_test, payload: { test } });
+          // set timer
+          set(parseInt(test.timer) * 60);
+        })
+        .catch((error) => {
+          console.log("error", error);
+        });
+    }
+    // check if it is mobile
+    const isMobile = window.innerWidth > 600;
+    console.log("screen width: ", isMobile);
+    setShowSidebar(isMobile);
   }, []);
+
+  useEffect(() => {
+    if (!isTimeLeft && !submit && !testState.showSolution) {
+      console.log(submit);
+      setSubmit(true);
+    }
+    if (submit && !testState.showSolution) {
+      // analytics
+      const analyticData = analytics(quizState.answers, testState.test);
+      dispatch({ type: actions.submit_test, payload: analyticData });
+      console.log("answers: ", quizState.answers);
+      console.log("submitting...", analyticData);
+
+      // navigate(`/tests/${docId}/result`);
+    }
+  }, [submit, isTimeLeft]);
+
   // on previous button click
   const onPrevious = () => {
     let currentQuestion = quizState.currentQuestion;
@@ -109,6 +151,7 @@ function Quiz() {
   };
   // on option change or question no button click
   const handleChange = (chosenOption) => {
+    if (testState.showSolution) return;
     // setSelectedOption(chosenOption);
     quizDispatch({
       type: quizActions.select_option,
@@ -116,6 +159,9 @@ function Quiz() {
     });
   };
   const questionButtonClasses = (i) => {
+    if (testState.showSolution) {
+      return;
+    }
     const currentQuestion = quizState.currentQuestion;
     const activeClass = currentQuestion === i ? styles["active-question"] : "";
     const answer = quizState.answers[i];
@@ -166,21 +212,33 @@ function Quiz() {
       payload: { answers, selectedOption },
     });
   };
+
+  const getWrongColor = (option) => {
+    if (!testState.showSolution) return;
+    const answer = quizState.answers[quizState.currentQuestion];
+    if (option.isAnswer) return;
+    if (answer) {
+      if (answer.selectedOption) {
+        if (answer.selectedOption === option.text) return "red";
+      }
+    }
+  };
+
   if (!testState.test) {
     return <div style={{ color: "black" }}>Loading...</div>;
   }
 
   return (
     <div className={styles.quiz}>
-      {/* <Alert
+      <Alert
         show={showAlert}
-        showHandler={showHandler}
+        showHandler={setShowAlert}
         title="Submit Quiz"
         body="Are you sure?"
         leftText="Yes"
         handleLeft={() => setSubmit(true)}
         rightText="No"
-      /> */}
+      />
       <header className={styles["quiz-header"]}>
         <div className={styles.navbar}>
           <div className={styles.logo}>
@@ -211,25 +269,33 @@ function Quiz() {
           </div>
         </div>
       </header>
-      <div className={styles["sub-header"]}>
-        Subject: {testState.test.subject}
-        {!showSidebar && (
-          <BiSolidChevronLeftSquare
+
+      <div className={styles["quiz-container"]}>
+        {showSidebar && (
+          <div
+            className={styles.overlay}
+            onClick={() => setShowSidebar(false)}
+          ></div>
+        )}
+        <div className={styles["sub-header"]}>
+          Subject: {testState.test.subject}
+          <CgMenu
             color="#6D214F"
             size="1.6rem"
             onClick={() => setShowSidebar(true)}
             style={{
               marginLeft: "auto",
-              marginRight: "8px",
+
               cursor: "pointer",
             }}
           />
-        )}
-      </div>
-      <div className={styles["quiz-container"]}>
+        </div>
         <div
-          className={styles["quiz-box"]}
-          style={{ marginRight: showSidebar ? "250px" : "0px" }}
+          className={
+            showSidebar
+              ? `${styles["quiz-box"]} ${styles.shiftRight}`
+              : `${styles["quiz-box"]} ${styles.shiftLeft}`
+          }
         >
           <div>
             <strong>Q{quizState.currentQuestion + 1}. </strong>{" "}
@@ -240,7 +306,16 @@ function Quiz() {
               {testState.test.questions[quizState.currentQuestion].options.map(
                 (option, index) => {
                   return (
-                    <li onClick={() => handleChange(option.text)} key={index}>
+                    <li
+                      onClick={() => handleChange(option.text)}
+                      key={index}
+                      style={{
+                        backgroundColor:
+                          testState.showSolution && option.isAnswer
+                            ? "green"
+                            : getWrongColor(option),
+                      }}
+                    >
                       <input
                         type="radio"
                         name="option"
@@ -258,14 +333,19 @@ function Quiz() {
           </div>
           <div className={styles.footer}>
             <button onClick={onPrevious}>Previous</button>
-            <button onClick={clearResponse}>Clear Response</button>
-            {testState.showSolution && <div>Re-attempt Questions</div>}
+            <button onClick={clearResponse}>
+              Clear <span className={styles.clear}>Response</span>
+            </button>
+            {/* {testState.showSolution && <div>Re-attempt Questions</div>} */}
             <button onClick={onNext}>Save & Next</button>
           </div>
         </div>
         <div
-          className={styles.sidebar}
-          style={{ right: showSidebar ? "0px" : "-250px" }}
+          className={
+            showSidebar
+              ? `${styles.sidebar} ${styles.showSidebar}`
+              : `${styles.sidebar} ${styles.hideSidebar}`
+          }
         >
           <BiSolidChevronRightSquare
             size="2rem"
@@ -278,25 +358,53 @@ function Quiz() {
             <div>Student Name</div>
           </div>
           <div className={styles.sideUpper}>
-            <div>Answered</div>
-            <div className={styles.circle}>
-              <span>{getDefinedElemenentCount(quizState.answers)}</span>
-            </div>
-            <div>Not Answered</div>
-            <div className={styles.circle}>
-              <span>
-                {" "}
-                {testState.test.questions.length -
-                  getDefinedElemenentCount(quizState.answers)}
-              </span>
-            </div>
-            <div>Not Visited</div>
-            <div className={styles.circle}>
-              <span>
-                {testState.test.questions.length -
-                  visitedQuestion(quizState.answers)}
-              </span>
-            </div>
+            {!testState.showSolution ? (
+              <table style={{ width: "100%" }}>
+                <thead>
+                  <tr>
+                    <td>Answered</td>
+                    <td>Not Answered</td>
+                    <td>Not Visited</td>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th>{getDefinedElemenentCount(quizState.answers)}</th>
+                    <th>
+                      {testState.test.questions.length -
+                        getDefinedElemenentCount(quizState.answers)}
+                    </th>
+                    <th>
+                      {testState.test.questions.length -
+                        visitedQuestion(quizState.answers)}
+                    </th>
+                  </tr>
+                </tbody>
+              </table>
+            ) : (
+              <table style={{ width: "100%" }}>
+                <thead>
+                  <tr>
+                    <td>Correct</td>
+                    <td>Wrong</td>
+                    <td>Accuracy</td>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th>
+                      {testState.showSolution && testState.analytics.correct}
+                    </th>
+                    <th>
+                      {testState.showSolution && testState.analytics.wrong}
+                    </th>
+                    <th>
+                      {testState.showSolution && testState.analytics.accuracy} %
+                    </th>
+                  </tr>
+                </tbody>
+              </table>
+            )}
           </div>
           <div className={styles["question-nos"]}>
             {[...Array(testState.test.questions.length)].map((e, i) => (
@@ -306,6 +414,22 @@ function Quiz() {
                   handleQuestionButtonClick(i);
                 }}
                 className={questionButtonClasses(i)}
+                style={{
+                  backgroundColor: testState.showSolution
+                    ? testState.analytics.solutions[i]
+                      ? "green"
+                      : testState.analytics.solutions[i] == 0
+                      ? "red"
+                      : ""
+                    : "",
+                  color: testState.showSolution
+                    ? testState.analytics.solutions[i]
+                      ? "white"
+                      : testState.analytics.solutions[i] == 0
+                      ? "white"
+                      : ""
+                    : "",
+                }}
               >
                 {i + 1}
               </button>

@@ -48,16 +48,28 @@
 .quiz-container {
   flex: 1;
   display: flex;
+  flex-direction: column;
   position: relative;
   overflow-x: hidden;
 }
 
 .quiz-box {
-  padding: 20px;
   flex: 1;
   display: flex;
   flex-direction: column;
+}
+.shiftRight {
   margin-right: 250px;
+}
+.shiftLeft {
+  margin-left: 0px;
+}
+.quiz-box > div {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+.quiz-box > div:first-child {
+  padding-top: 20px;
 }
 
 .options {
@@ -96,8 +108,11 @@
   right: 0;
   bottom: 0;
   top: 0;
+  z-index: 10;
   width: 250px;
-  animation: slidein 0.2s ease-in;
+}
+.showSidebar {
+  animation: slidein 0.5s ease-in;
 }
 @keyframes slidein {
   0% {
@@ -107,6 +122,19 @@
     right: 0px;
   }
 }
+.hideSidebar {
+  display: none;
+}
+
+@keyframes slideout {
+  0% {
+    width: 250px;
+    display: flex;
+  }
+  100% {
+    width: 0px;
+  }
+}
 .profile {
   display: flex;
   gap: 20px;
@@ -114,15 +142,19 @@
   padding: 20px;
 }
 .sideUpper {
+  font-size: 0.8em;
   border-bottom: 1px solid white;
-  padding: 10px 20px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+
+  padding-top: 10px;
+  padding-bottom: 10px;
+  text-align: center;
 }
-.sideUpper > .circle > span {
+
+.sideUpper > .circle {
   height: 10px;
   width: 10px;
   border-radius: 50%;
+  font-size: 1.2em;
 }
 
 .question-nos {
@@ -147,6 +179,9 @@
   background-color: #415568;
   color: white;
   border-radius: 4px;
+}
+.submitButton:hover {
+  background-color: #2c3e50;
 }
 
 .question-nos button {
@@ -177,7 +212,6 @@
 }
 .footer {
   display: flex;
-
   margin-bottom: 30px;
 }
 .footer button {
@@ -203,7 +237,7 @@
 }
 
 .sub-header {
-  padding-left: 16px;
+  padding: 10px 16px;
   display: flex;
   color: black;
   gap: 20px;
@@ -214,5 +248,38 @@
 @media only screen and (max-width: 600px) {
   .timeLeft {
     display: none;
+  }
+  .quiz-box {
+    padding-bottom: 0px;
+  }
+  .footer {
+    margin-bottom: 0px;
+
+    box-shadow: rgba(0, 0, 0, 0.15) 0px 5px 15px 0px;
+    padding-bottom: 10px;
+    padding-top: 10px;
+  }
+  .submitButton {
+    margin-bottom: 10px;
+  }
+  .clear {
+    display: none;
+  }
+  .overlay {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(112, 128, 144, 0.6);
+  }
+  .shiftRight {
+    margin-right: 0px;
+  }
+  .shiftLeft {
+    margin-left: 0px;
+  }
+  .sideUpper {
+    font-size: 0.7em;
   }
 }
