@@ -8,6 +8,10 @@ import React, {
 import { useLocation, Link, useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { BiArrowBack } from "react-icons/bi";
+import {
+  BiSolidChevronRightSquare,
+  BiSolidChevronLeftSquare,
+} from "react-icons/bi";
 
 import styles from "./Quiz.module.css";
 import useCountDown from "../../Hooks/useCountDown";
@@ -28,6 +32,7 @@ import { getDefinedElemenentCount, visitedQuestion } from "../../utils/utils";
 function Quiz() {
   const { testState, dispatch } = useContext(TestContext);
   const [quizState, quizDispatch] = useReducer(quizReducer, quizintialState);
+  const [showSidebar, setShowSidebar] = useState(true);
   console.log("quiz initialized: ", quizState);
 
   const navigate = useNavigate();
@@ -50,12 +55,19 @@ function Quiz() {
     const visitedQuestions = [...quizState.visitedQuestions];
     visitedQuestions[currentQuestion] = currentQuestion;
     // selected option
-    const answer = quizState.answers[currentQuestion];
+    const answers = quizState.answers;
+    const answer = answers[currentQuestion];
     const selectedOption = answer && answer.selectedOption;
+    // answers
+    // check if already answered
+    // check if not answered and not visited
+    if (!answer) {
+      answers[currentQuestion] = { selectedOption: null, correctAnswer: null };
+    }
 
     quizDispatch({
       type: quizActions.pre_button,
-      payload: { currentQuestion, visitedQuestions, selectedOption },
+      payload: { currentQuestion, visitedQuestions, selectedOption, answers },
     });
   };
   // on next button click
@@ -138,6 +150,22 @@ function Quiz() {
       },
     });
   };
+  const clearResponse = () => {
+    const selectedOption = null;
+    const answers = quizState.answers;
+    const answer = answers[quizState.currentQuestion];
+    console.log("clear resonse button clicked: ", answers);
+    if (answer) {
+      answers[quizState.currentQuestion] = {
+        selectedOption: null,
+        correctAnswer: answer.correctAnswer,
+      };
+    }
+    quizDispatch({
+      type: quizActions.clear_response,
+      payload: { answers, selectedOption },
+    });
+  };
   if (!testState.test) {
     return <div style={{ color: "black" }}>Loading...</div>;
   }
@@ -185,9 +213,24 @@ function Quiz() {
       </header>
       <div className={styles["sub-header"]}>
         Subject: {testState.test.subject}
+        {!showSidebar && (
+          <BiSolidChevronLeftSquare
+            color="#6D214F"
+            size="1.6rem"
+            onClick={() => setShowSidebar(true)}
+            style={{
+              marginLeft: "auto",
+              marginRight: "8px",
+              cursor: "pointer",
+            }}
+          />
+        )}
       </div>
       <div className={styles["quiz-container"]}>
-        <div className={styles["quiz-box"]}>
+        <div
+          className={styles["quiz-box"]}
+          style={{ marginRight: showSidebar ? "250px" : "0px" }}
+        >
           <div>
             <strong>Q{quizState.currentQuestion + 1}. </strong>{" "}
             {testState.test.questions[quizState.currentQuestion].question}
@@ -215,11 +258,21 @@ function Quiz() {
           </div>
           <div className={styles.footer}>
             <button onClick={onPrevious}>Previous</button>
-            <div>Re-attempt Questions</div>
+            <button onClick={clearResponse}>Clear Response</button>
+            {testState.showSolution && <div>Re-attempt Questions</div>}
             <button onClick={onNext}>Save & Next</button>
           </div>
         </div>
-        <div className={styles.sidebar}>
+        <div
+          className={styles.sidebar}
+          style={{ right: showSidebar ? "0px" : "-250px" }}
+        >
+          <BiSolidChevronRightSquare
+            size="2rem"
+            onClick={() => setShowSidebar(false)}
+            color="#6D214F"
+            className={styles.close}
+          />
           <div className={styles.profile}>
             <div>Image</div>
             <div>Student Name</div>

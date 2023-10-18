@@ -3,6 +3,7 @@ export const quizActions = {
   pre_button: "PRE_BUTTON",
   visit_question: "VISIT_QUESTION",
   select_option: "SELECT_OPTION",
+  clear_response: "CLEAR_RESPONSE",
 };
 // null means ->
 // undefined means ->
@@ -32,6 +33,7 @@ const quizReducer = (state, action) => {
         visitedQuestions: action.payload.visitedQuestions,
         currentQuestion: action.payload.currentQuestion,
         selectedOption: action.payload.selectedOption,
+        answers: action.payload.answers,
       };
     case quizActions.visit_question:
       console.log(quizActions.visit_question);
@@ -44,6 +46,12 @@ const quizReducer = (state, action) => {
     case quizActions.select_option:
       return {
         ...state,
+        selectedOption: action.payload.selectedOption,
+      };
+    case quizActions.clear_response:
+      return {
+        ...state,
+        answers: action.payload.answers,
         selectedOption: action.payload.selectedOption,
       };
     default:
