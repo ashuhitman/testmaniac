@@ -36,7 +36,35 @@ export const analytics = (answers, test) => {
     }
     count++;
   }
-  const attempted = getDefinedElemenentCount(answers);
-  const accuracy = Math.round((correct * 100 * 100) / attempted) / 100;
+  const attempted = correct + wrong;
+  const accuracy =
+    attempted === 0 ? 0 : Math.round((correct * 100 * 100) / attempted) / 100;
   return { correct, wrong, attempted, accuracy, totalQuestions, solutions };
+};
+
+const getNewNumber = (number) => {
+  const arr = [];
+  for (let i = 0; i < number; i++) {
+    while (true) {
+      // generate new number
+      const rndInt = Math.floor(Math.random() * number);
+      // check if the number is already generated
+      if (!arr.includes(rndInt)) {
+        arr.push(rndInt);
+        break;
+      }
+    }
+  }
+  return arr;
+};
+
+export const getNewArray = (array) => {
+  const newArray = [];
+  const number = array.length;
+  const newArrayIndex = getNewNumber(number);
+  for (let i = 0; i < number; i++) {
+    newArray[i] = array[newArrayIndex[i]];
+  }
+
+  return newArray;
 };

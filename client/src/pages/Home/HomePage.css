@@ -1,8 +1,8 @@
 .test-container {
   padding: 15px;
-  display: flex;
-  gap: 15px;
-  flex-wrap: wrap;
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(7, 1fr);
 }
 
 .filter-text {

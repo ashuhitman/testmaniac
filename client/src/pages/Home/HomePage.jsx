@@ -65,11 +65,6 @@ function HomePage() {
           {testState.tests
             .filter((test) => {
               if (isLatest) {
-                console.log(
-                  new Date(test.createdAt),
-                  ystDate,
-                  new Date(test.createdAt) >= ystDate
-                );
                 return new Date(test.createdAt) >= ystDate;
               } else {
                 return true;

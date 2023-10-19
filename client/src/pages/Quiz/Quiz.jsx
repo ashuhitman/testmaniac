@@ -38,16 +38,14 @@ function Quiz() {
   const [showSidebar, setShowSidebar] = useState(true);
   const [showAlert, setShowAlert] = useState(false);
   const [submit, setSubmit] = useState(false);
-  const [reattempt, setReattempt] = useState(false);
-  // console.log("quiz initialized: ", quizState);
 
-  const navigate = useNavigate();
+  // console.log("quiz initialized: ", quizState);
   // get document id
   const { docId } = useParams();
   const [isTimeLeft, set, reset, time] = useCountDown(null);
   useEffect(() => {
-    // set timer
     if (testState.test) {
+      // set timer
       set(parseInt(testState.test.timer) * 60);
     } else {
       console.log("loading test state");
@@ -73,14 +71,12 @@ function Quiz() {
 
   useEffect(() => {
     if (!isTimeLeft && !submit && !testState.showSolution) {
-      console.log(submit);
       setSubmit(true);
     }
     if (submit && !testState.showSolution) {
       // analytics
       const analyticData = analytics(quizState.answers, testState.test);
       dispatch({ type: actions.submit_test, payload: analyticData });
-      console.log("answers: ", quizState.answers);
       console.log("submitting...", analyticData);
 
       // navigate(`/tests/${docId}/result`);
@@ -125,18 +121,16 @@ function Quiz() {
     const options = testState.test.questions[quizState.currentQuestion].options;
     const correctOption = options.find((option) => option.isAnswer);
     const answers = [...quizState.answers];
-    if (!reattempt) {
-      answers[currentQuestion] = {
-        selectedOption: quizState.selectedOption,
-        correctAnswer: correctOption.text,
-      };
-    }
+
+    answers[currentQuestion] = {
+      selectedOption: quizState.selectedOption,
+      correctAnswer: correctOption.text,
+    };
 
     // selected option
-    const selectedOption =
-      !reattempt && answers[nextQuestion]
-        ? answers[nextQuestion].selectedOption
-        : null;
+    const selectedOption = answers[nextQuestion]
+      ? answers[nextQuestion].selectedOption
+      : null;
 
     quizDispatch({
       type: quizActions.next_button,

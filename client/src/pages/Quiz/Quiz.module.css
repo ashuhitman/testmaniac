@@ -77,12 +77,12 @@
 }
 .options ul {
   padding-top: 10px;
-  padding-left: 10px;
+  padding-left: 0px;
 }
 .options li {
   list-style-type: none;
   margin-top: 10px;
-  padding: 10px 10px;
+  padding: 10px 20px;
 }
 .options li:hover {
   background-color: beige;
@@ -151,13 +151,6 @@
   text-align: center;
 }
 
-.sideUpper > .circle {
-  height: 10px;
-  width: 10px;
-  border-radius: 50%;
-  font-size: 1.2em;
-}
-
 .question-nos {
   padding: 20px;
   display: grid;
@@ -174,7 +167,7 @@
   margin-right: 20px;
   font-weight: bold;
   border: none;
-  padding: 8px 8px;
+  padding: 10px 8px;
   cursor: pointer;
   background-color: #415568;
   color: white;
@@ -216,7 +209,7 @@
 }
 .footer button {
   border: none;
-  padding: 8px 8px;
+  padding: 10px 8px;
   cursor: pointer;
   background-color: #415568;
   color: white;
