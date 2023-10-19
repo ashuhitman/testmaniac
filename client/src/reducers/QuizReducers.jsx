@@ -17,8 +17,6 @@ export const quizintialState = {
   showSolution: false,
 };
 const quizReducer = (state, action) => {
-  console.log("quizReducer:action ", action);
-
   switch (action.type) {
     case quizActions.next_button:
       return {

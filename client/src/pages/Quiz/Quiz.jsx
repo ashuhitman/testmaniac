@@ -10,6 +10,7 @@ import axios from "axios";
 import { BiArrowBack } from "react-icons/bi";
 import { BiSolidChevronRightSquare } from "react-icons/bi";
 import { CgMenu } from "react-icons/cg";
+import { AiFillPlayCircle, AiFillPauseCircle } from "react-icons/ai";
 
 import styles from "./Quiz.module.css";
 import useCountDown from "../../Hooks/useCountDown";
@@ -39,11 +40,12 @@ function Quiz() {
   const [showSidebar, setShowSidebar] = useState(true);
   const [showAlert, setShowAlert] = useState(false);
   const [submit, setSubmit] = useState(false);
+  const [pause, setPause] = useState(false);
 
   // console.log("quiz initialized: ", quizState);
   // get document id
   const { docId } = useParams();
-  const [isTimeLeft, set, reset, time] = useCountDown(null);
+  const [isTimeLeft, set, reset, pauseTimer, time] = useCountDown(null);
   useEffect(() => {
     console.log("running...");
     if (testState.test) {
@@ -276,16 +278,43 @@ function Quiz() {
         )}
         <div className={styles["sub-header"]}>
           Subject: {testState.test.subject}
-          <CgMenu
-            color="#6D214F"
-            size="1.6rem"
-            onClick={() => setShowSidebar(true)}
-            style={{
-              marginLeft: "auto",
-
-              cursor: "pointer",
-            }}
-          />
+          <div style={{ marginLeft: "auto" }}>
+            {pause ? (
+              <AiFillPlayCircle
+                color="#6D214F"
+                size="1.6rem"
+                style={{
+                  marginRight: "10px",
+                  cursor: "pointer",
+                }}
+                onClick={() => {
+                  setPause(false);
+                  pauseTimer();
+                }}
+              />
+            ) : (
+              <AiFillPauseCircle
+                color="#6D214F"
+                size="1.6rem"
+                style={{
+                  marginRight: "10px",
+                  cursor: "pointer",
+                }}
+                onClick={() => {
+                  setPause(true);
+                  pauseTimer();
+                }}
+              />
+            )}
+            <CgMenu
+              color="#6D214F"
+              size="1.6rem"
+              onClick={() => setShowSidebar(true)}
+              style={{
+                cursor: "pointer",
+              }}
+            />
+          </div>
         </div>
         <div
           className={
@@ -344,18 +373,46 @@ function Quiz() {
               : `${styles.sidebar} ${styles.hideSidebar}`
           }
         >
-          <BiSolidChevronRightSquare
-            size="2rem"
-            onClick={() => setShowSidebar(false)}
-            color="#6D214F"
-            className={styles.close}
-          />
           <div className={styles.profile}>
             <CircularImage
               size="30px"
               imageUrl="https://sketchok.com/images/articles/02-comics/002-superheroes/132/16.jpg"
             />
             <div>Ashutsh Singh</div>
+            <div className={styles.close}>
+              {pause ? (
+                <AiFillPlayCircle
+                  color="#6D214F"
+                  size="2rem"
+                  style={{
+                    marginRight: "10px",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => {
+                    setPause(false);
+                    pauseTimer();
+                  }}
+                />
+              ) : (
+                <AiFillPauseCircle
+                  color="#6D214F"
+                  size="2rem"
+                  style={{
+                    marginRight: "10px",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => {
+                    setPause(true);
+                    pauseTimer();
+                  }}
+                />
+              )}
+              <BiSolidChevronRightSquare
+                size="2rem"
+                onClick={() => setShowSidebar(false)}
+                color="#6D214F"
+              />
+            </div>
           </div>
           <div className={styles.sideUpper}>
             {!testState.showSolution ? (

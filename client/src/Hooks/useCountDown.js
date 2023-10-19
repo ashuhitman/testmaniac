@@ -1,26 +1,31 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import secondsToTime from "../utils/timeConversion";
 
 export default function useCountDown(initialState) {
   const [seconds, setSeconds] = useState(initialState);
   const [isTimeLeft, setIsTimeLeft] = useState(true);
+  const [isRunning, setIsRunning] = useState(true);
 
   useEffect(() => {
     let timeout;
-    if (seconds === undefined || seconds === null) {
-      console.log("invalid time");
-    } else {
-      if (seconds === 0) {
-        setIsTimeLeft(false);
+    if (isRunning) {
+      if (seconds === undefined || seconds === null) {
+        console.log("invalid time");
       } else {
-        timeout = setTimeout(() => {
-          setSeconds(seconds - 1);
-        }, 1000);
+        if (seconds === 0) {
+          setIsTimeLeft(false);
+        } else {
+          timeout = setTimeout(() => {
+            setSeconds(seconds - 1);
+          }, 1000);
+        }
       }
+    } else {
+      clearTimeout(timeout);
     }
 
     return () => clearTimeout(timeout);
-  }, [seconds]);
+  }, [seconds, isRunning]);
 
   const reset = () => setSeconds(0);
 
@@ -29,5 +34,13 @@ export default function useCountDown(initialState) {
     setSeconds(seconds);
   };
 
-  return [isTimeLeft, set, reset, secondsToTime(seconds)];
+  const pauseTimer = () => {
+    if (isRunning) {
+      setIsRunning(false);
+    } else {
+      setIsRunning(true);
+    }
+  };
+
+  return [isTimeLeft, set, reset, pauseTimer, secondsToTime(seconds)];
 }
