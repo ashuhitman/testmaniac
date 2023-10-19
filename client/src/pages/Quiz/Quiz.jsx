@@ -279,33 +279,34 @@ function Quiz() {
         <div className={styles["sub-header"]}>
           Subject: {testState.test.subject}
           <div style={{ marginLeft: "auto" }}>
-            {pause ? (
-              <AiFillPlayCircle
-                color="#6D214F"
-                size="1.6rem"
-                style={{
-                  marginRight: "10px",
-                  cursor: "pointer",
-                }}
-                onClick={() => {
-                  setPause(false);
-                  pauseTimer();
-                }}
-              />
-            ) : (
-              <AiFillPauseCircle
-                color="#6D214F"
-                size="1.6rem"
-                style={{
-                  marginRight: "10px",
-                  cursor: "pointer",
-                }}
-                onClick={() => {
-                  setPause(true);
-                  pauseTimer();
-                }}
-              />
-            )}
+            {!testState.showSolution &&
+              (pause ? (
+                <AiFillPlayCircle
+                  color="#6D214F"
+                  size="1.6rem"
+                  style={{
+                    marginRight: "10px",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => {
+                    setPause(false);
+                    pauseTimer();
+                  }}
+                />
+              ) : (
+                <AiFillPauseCircle
+                  color="#6D214F"
+                  size="1.6rem"
+                  style={{
+                    marginRight: "10px",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => {
+                    setPause(true);
+                    pauseTimer();
+                  }}
+                />
+              ))}
             <CgMenu
               color="#6D214F"
               size="1.6rem"
@@ -380,33 +381,34 @@ function Quiz() {
             />
             <div>Ashutsh Singh</div>
             <div className={styles.close}>
-              {pause ? (
-                <AiFillPlayCircle
-                  color="#6D214F"
-                  size="2rem"
-                  style={{
-                    marginRight: "10px",
-                    cursor: "pointer",
-                  }}
-                  onClick={() => {
-                    setPause(false);
-                    pauseTimer();
-                  }}
-                />
-              ) : (
-                <AiFillPauseCircle
-                  color="#6D214F"
-                  size="2rem"
-                  style={{
-                    marginRight: "10px",
-                    cursor: "pointer",
-                  }}
-                  onClick={() => {
-                    setPause(true);
-                    pauseTimer();
-                  }}
-                />
-              )}
+              {!testState.showSolution &&
+                (pause ? (
+                  <AiFillPlayCircle
+                    color="#6D214F"
+                    size="2rem"
+                    style={{
+                      marginRight: "10px",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => {
+                      setPause(false);
+                      pauseTimer();
+                    }}
+                  />
+                ) : (
+                  <AiFillPauseCircle
+                    color="#6D214F"
+                    size="2rem"
+                    style={{
+                      marginRight: "10px",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => {
+                      setPause(true);
+                      pauseTimer();
+                    }}
+                  />
+                ))}
               <BiSolidChevronRightSquare
                 size="2rem"
                 onClick={() => setShowSidebar(false)}
