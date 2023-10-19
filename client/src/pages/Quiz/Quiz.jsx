@@ -28,6 +28,7 @@ import { actions } from "../../context/Test/TestState";
 import {
   analytics,
   getDefinedElemenentCount,
+  getNewArray,
   visitedQuestion,
 } from "../../utils/utils";
 import CircularImage from "../../Components/CircularImage/CircularImage";
@@ -44,6 +45,7 @@ function Quiz() {
   const { docId } = useParams();
   const [isTimeLeft, set, reset, time] = useCountDown(null);
   useEffect(() => {
+    console.log("running...");
     if (testState.test) {
       // set timer
       set(parseInt(testState.test.timer) * 60);
@@ -54,6 +56,7 @@ function Quiz() {
         .then((response) => {
           console.log(response.data);
           const test = response.data;
+          test.questions = getNewArray(test.questions);
           // set test data
           dispatch({ type: actions.update_test, payload: { test } });
           // set timer
