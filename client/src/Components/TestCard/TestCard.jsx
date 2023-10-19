@@ -10,18 +10,14 @@ function TestCard({ cardData }) {
   const { _id, testName, timer, questionAmount, subject, questions } = cardData;
   const { testState, dispatch } = useContext(TestContext);
   const [test, setTest] = useState();
-  useEffect(() => {
-    // get new questions
+  useEffect(() => {}, []);
+  const goToQuizPage = () => {
     const data = { ...cardData };
     const questions = getNewArray(data.questions);
     // update the questions
     data.questions = questions;
-    setTest(data);
-  }, []);
-  const goToQuizPage = () => {
-    const newTest = test ? test : cardData;
     // set test state
-    dispatch({ type: actions.reset, payload: { test: newTest } });
+    dispatch({ type: actions.reset, payload: { test: data } });
     // goto quiz page
     navigate(`/tests/${_id}`, { state: cardData });
   };
