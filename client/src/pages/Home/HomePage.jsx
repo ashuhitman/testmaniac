@@ -8,6 +8,7 @@ import { API_ENDPOINTS } from "../../utils/constants";
 import HomePageLoader from "../../Components/HomePageLoader/HomePageLoader";
 import TestContext from "../../context/Test/TestContext";
 import { actions } from "../../context/Test/TestState";
+import Pagination from "../../Components/Pagination/Pagination";
 
 function HomePage() {
   // test context
@@ -20,6 +21,8 @@ function HomePage() {
   // console.log(tests);
 
   useEffect(() => {
+    // clear local storage
+    localStorage.clear();
     console.log("homepage: ", testState);
     if (testState.tests.length > 0) {
       return;
@@ -79,6 +82,7 @@ function HomePage() {
             )}
         </div>
       )}
+      <Pagination />
     </div>
   );
 }

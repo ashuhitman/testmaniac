@@ -218,6 +218,11 @@
   color: white;
   border-radius: 4px;
 }
+.icon {
+  cursor: pointer;
+  background-color: white;
+  border-radius: 0.8rem;
+}
 .footer button:nth-child(2) {
   margin-left: 10px;
 }
@@ -238,6 +243,9 @@
   gap: 20px;
   box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px,
     rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+}
+.sub-header span {
+  font-size: 0.8rem;
 }
 /* Extra small devices (phones, 600px and down) */
 @media only screen and (max-width: 600px) {

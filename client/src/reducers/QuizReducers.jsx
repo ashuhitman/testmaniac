@@ -5,6 +5,10 @@ export const quizActions = {
   select_option: "SELECT_OPTION",
   clear_response: "CLEAR_RESPONSE",
   submit_test: "SUBMIT_TEST",
+  restart_test: "RESTART_TEST",
+  state_from_local_state: "STATE_FROM_LOCAL_STATE",
+  pause_test: "PAUSE_TEST",
+  resume_test: "RESUME_TEST",
 };
 // null means ->
 // undefined means ->
@@ -15,9 +19,12 @@ export const quizintialState = {
   currentQuestion: 0,
   analytics: null,
   showSolution: false,
+  submit: false,
 };
 const quizReducer = (state, action) => {
   switch (action.type) {
+    case quizActions.restart_test:
+      return quizintialState;
     case quizActions.next_button:
       return {
         ...state,
@@ -57,8 +64,17 @@ const quizReducer = (state, action) => {
     case quizActions.submit_test:
       return {
         ...state,
+        currentQuestion: 0,
         showSolution: true,
+        submit: true,
+        selectedOption: state.answers[0]
+          ? state.answers[0].selectedOption
+          : null,
         analytics: action.payload,
+      };
+    case quizActions.state_from_local_state:
+      return {
+        ...action.payload,
       };
     default:
       return state;

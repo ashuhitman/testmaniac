@@ -12,10 +12,14 @@ function TestCard({ cardData }) {
   const [test, setTest] = useState();
   useEffect(() => {}, []);
   const goToQuizPage = () => {
+    //clear local storage
+    localStorage.clear();
     const data = { ...cardData };
     const questions = getNewArray(data.questions);
     // update the questions
     data.questions = questions;
+    // save current test to local storage
+    localStorage.setItem("test", JSON.stringify(data));
     // set test state
     dispatch({ type: actions.reset, payload: { test: data } });
     // goto quiz page

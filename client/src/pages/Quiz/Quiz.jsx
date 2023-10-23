@@ -5,15 +5,18 @@ import React, {
   useRef,
   useState,
 } from "react";
+import _ from "lodash";
 import { useLocation, Link, useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { BiArrowBack } from "react-icons/bi";
 import { BiSolidChevronRightSquare } from "react-icons/bi";
 import { CgMenu } from "react-icons/cg";
 import { AiFillPlayCircle, AiFillPauseCircle } from "react-icons/ai";
+import { IoIosRefreshCircle } from "react-icons/io";
+import { RiRestartFill } from "react-icons/ri";
 
 import styles from "./Quiz.module.css";
-import useCountDown from "../../Hooks/useCountDown";
+
 import secondsToTime from "../../utils/timeConversion";
 
 import { API_ENDPOINTS } from "../../utils/constants";
@@ -33,63 +36,129 @@ import {
   visitedQuestion,
 } from "../../utils/utils";
 import CircularImage from "../../Components/CircularImage/CircularImage";
+import useCountdownTimer from "../../Hooks/useCountDownTimer";
 
 function Quiz() {
   const { testState, dispatch } = useContext(TestContext);
   const [quizState, quizDispatch] = useReducer(quizReducer, quizintialState);
   const [showSidebar, setShowSidebar] = useState(true);
   const [showAlert, setShowAlert] = useState(false);
-  const [submit, setSubmit] = useState(false);
-  const [pause, setPause] = useState(false);
 
   // console.log("quiz initialized: ", quizState);
   // get document id
   const { docId } = useParams();
-  const [isTimeLeft, set, reset, pauseTimer, time] = useCountDown(null);
+  const [isTimeLeft, seconds, isRunning, start, resume, stop, pause] =
+    useCountdownTimer(null);
+
+  const time = secondsToTime(seconds);
+
   useEffect(() => {
-    console.log("running...");
-    if (testState.test) {
-      // set timer
-      set(parseInt(testState.test.timer) * 60);
-    } else {
-      console.log("loading test state");
-      // if test data not available then fetch it
-      axios(`${API_ENDPOINTS.TESTS}/${docId}`)
-        .then((response) => {
-          console.log(response.data);
-          const test = response.data;
-          test.questions = getNewArray(test.questions);
-          // set test data
-          dispatch({ type: actions.update_test, payload: { test } });
-          // set timer
-          set(parseInt(test.timer) * 60);
-        })
-        .catch((error) => {
-          console.log("error", error);
-        });
-    }
     // check if it is mobile
     const isMobile = window.innerWidth > 600;
     console.log("screen width: ", isMobile);
     setShowSidebar(isMobile);
+    let time;
+    if (!testState.test) {
+      // check if data is locally available
+      const localStorageData = JSON.parse(localStorage.getItem("test") || "{}");
+      if (Object.keys(localStorageData).length !== 0) {
+        // data is locally available
+        // set time
+        time = localStorageData.timer;
+        // set test data
+        dispatch({
+          type: actions.update_test,
+          payload: { test: localStorageData },
+        });
+      } else {
+        // else fetch it from the server
+        axios(`${API_ENDPOINTS.TESTS}/${docId}`)
+          .then((response) => {
+            console.log(response.data);
+            const test = response.data;
+            // set timer
+            time = test.timer;
+
+            // save current test to local storage
+            localStorage.setItem("test", JSON.stringify(test));
+            dispatch({
+              type: actions.update_test,
+              payload: { test: localStorageData },
+            });
+          })
+          .catch((error) => {
+            console.log("error", error);
+          });
+      }
+    } else {
+      time = testState.test.timer;
+    }
+
+    // save  at local storage
+    if (!localStorage.getItem("time")) {
+      localStorage.setItem("time", parseInt(time) * 60);
+    }
+    start();
+    // get local storage data
+    const localData = JSON.parse(
+      localStorage.getItem(docId) || JSON.stringify(quizintialState)
+    );
+
+    if (!_.isEqual(localData, quizintialState)) {
+      // fetch quiz state
+
+      quizDispatch({
+        type: quizActions.state_from_local_state,
+        payload: localData,
+      });
+      console.log("localStorageData: ", localData);
+    }
   }, []);
 
   useEffect(() => {
-    if (!isTimeLeft && !submit && !testState.showSolution) {
-      setSubmit(true);
+    if (!isTimeLeft && !quizState.submit) {
+      submitTest();
     }
-    if (submit && !testState.showSolution) {
-      // analytics
-      const analyticData = analytics(quizState.answers, testState.test);
-      dispatch({ type: actions.submit_test, payload: analyticData });
-      console.log("submitting...", analyticData);
 
-      // navigate(`/tests/${docId}/result`);
+    // save state to local storage
+    saveStateToLocalStorage(quizState);
+  }, [isTimeLeft, quizState, seconds]);
+
+  const submitTest = () => {
+    const analyticData = analytics(quizState.answers, testState.test);
+
+    // dispacth action on submit
+    quizDispatch({
+      type: quizActions.submit_test,
+      payload: analyticData,
+    });
+    // save state to local storage
+
+    saveStateToLocalStorage(quizState);
+  };
+
+  const saveStateToLocalStorage = (state) => {
+    // store local state on state change
+    if (Object.keys(state).length !== 0) {
+      localStorage.setItem(docId, JSON.stringify(state));
     }
-  }, [submit, isTimeLeft]);
+  };
 
+  const restartTest = () => {
+    console.log("Restarting...");
+
+    // restart the test
+    localStorage.setItem("time", parseInt(testState.test.timer) * 60);
+    localStorage.setItem("active", true);
+    start();
+    // reset the local storage
+    saveStateToLocalStorage(quizintialState);
+    // reset quiz state
+    quizDispatch({ type: quizActions.restart_test });
+  };
   // on previous button click
   const onPrevious = () => {
+    if (!isRunning) return;
     let currentQuestion = quizState.currentQuestion;
     // if current question is 1
     if (currentQuestion === 0) return;
@@ -114,6 +183,7 @@ function Quiz() {
   };
   // on next button click
   const onNext = () => {
+    if (!isRunning) return;
     // if current question is equal to total question
     //else increment current question
     const currentQuestion = quizState.currentQuestion;
@@ -146,10 +216,20 @@ function Quiz() {
         visited: quizState.visited + 1,
       },
     });
+
+    // saveStateToLocalStorage(quizState);
+  };
+  const toggleTimer = () => {
+    if (!isRunning) {
+      resume();
+    } else {
+      pause();
+    }
   };
   // on option change or question no button click
   const handleChange = (chosenOption) => {
-    if (testState.showSolution) return;
+    if (!isRunning) return;
+    if (quizState.showSolution) return;
     // setSelectedOption(chosenOption);
     quizDispatch({
       type: quizActions.select_option,
@@ -159,7 +239,7 @@ function Quiz() {
   const questionButtonClasses = (i) => {
     const currentQuestion = quizState.currentQuestion;
     const activeClass = currentQuestion === i ? styles["active-question"] : "";
-    if (testState.showSolution) {
+    if (quizState.showSolution) {
       return activeClass;
     }
 
@@ -175,6 +255,7 @@ function Quiz() {
     return activeClass;
   };
   const handleQuestionButtonClick = (i) => {
+    if (!isRunning) return;
     const currentQuestion = quizState.currentQuestion;
     // if same question
     if (currentQuestion === i) return;
@@ -196,6 +277,7 @@ function Quiz() {
     });
   };
   const clearResponse = () => {
+    if (!isRunning) return;
     const selectedOption = null;
     const answers = quizState.answers;
     const answer = answers[quizState.currentQuestion];
@@ -213,7 +295,7 @@ function Quiz() {
   };
 
   const getWrongColor = (option) => {
-    if (!testState.showSolution) return;
+    if (!quizState.showSolution) return;
     const answer = quizState.answers[quizState.currentQuestion];
     if (option.isAnswer) return;
     if (answer) {
@@ -235,7 +317,7 @@ function Quiz() {
         title="Submit Quiz"
         body="Are you sure?"
         leftText="Yes"
-        handleLeft={() => setSubmit(true)}
+        handleLeft={() => submitTest()}
         rightText="No"
       />
       <header className={styles["quiz-header"]}>
@@ -247,7 +329,7 @@ function Quiz() {
             {testState.test.testName}
           </div>
           <div className={styles.links}>
-            {!testState.showSolution && (
+            {!quizState.showSolution ? (
               <div>
                 <Link className={styles.link}>
                   <span className={styles.timeLeft}>Time Left</span>{" "}
@@ -264,6 +346,13 @@ function Quiz() {
                   </span>
                 </Link>
               </div>
+            ) : (
+              <RiRestartFill
+                color="6D214F"
+                size="1.6rem"
+                className={styles.icon}
+                onClick={restartTest}
+              />
             )}
           </div>
         </div>
@@ -278,9 +367,33 @@ function Quiz() {
         )}
         <div className={styles["sub-header"]}>
           Subject: {testState.test.subject}
+          <div>
+            Marks
+            <span
+              style={{
+                marginLeft: "4px",
+                backgroundColor: "green",
+                padding: "4px 6px",
+                borderRadius: "20px",
+                color: "white",
+              }}
+            >
+              +1
+            </span>{" "}
+            <span
+              style={{
+                backgroundColor: "red",
+                padding: "5px 8px",
+                borderRadius: "20px",
+                color: "white",
+              }}
+            >
+              -1
+            </span>
+          </div>
           <div style={{ marginLeft: "auto" }}>
-            {!testState.showSolution &&
-              (pause ? (
+            {!quizState.showSolution &&
+              (!isRunning ? (
                 <AiFillPlayCircle
                   color="#6D214F"
                   size="1.6rem"
@@ -289,8 +402,8 @@ function Quiz() {
                     cursor: "pointer",
                   }}
                   onClick={() => {
-                    setPause(false);
-                    pauseTimer();
+                    quizDispatch({ type: quizActions.restart_test });
+                    toggleTimer();
                   }}
                 />
               ) : (
@@ -302,8 +415,11 @@ function Quiz() {
                     cursor: "pointer",
                   }}
                   onClick={() => {
-                    setPause(true);
-                    pauseTimer();
+                    quizDispatch({
+                      type: quizActions.pause_test,
+                      payload: seconds,
+                    });
+                    toggleTimer();
                   }}
                 />
               ))}
@@ -338,7 +454,7 @@ function Quiz() {
                       key={index}
                       style={{
                         backgroundColor:
-                          testState.showSolution && option.isAnswer
+                          quizState.showSolution && option.isAnswer
                             ? "green"
                             : getWrongColor(option),
                       }}
@@ -381,8 +497,8 @@ function Quiz() {
             />
             <div>Ashutsh Singh</div>
             <div className={styles.close}>
-              {!testState.showSolution &&
-                (pause ? (
+              {!quizState.showSolution &&
+                (!isRunning ? (
                   <AiFillPlayCircle
                     color="#6D214F"
                     size="2rem"
@@ -391,8 +507,8 @@ function Quiz() {
                       cursor: "pointer",
                     }}
                     onClick={() => {
-                      setPause(false);
-                      pauseTimer();
+                      quizDispatch({ type: quizActions.resume_test });
+                      toggleTimer();
                     }}
                   />
                 ) : (
@@ -404,8 +520,11 @@ function Quiz() {
                       cursor: "pointer",
                     }}
                     onClick={() => {
-                      setPause(true);
-                      pauseTimer();
+                      quizDispatch({
+                        type: quizActions.pause_test,
+                        payload: seconds,
+                      });
+                      toggleTimer();
                     }}
                   />
                 ))}
@@ -417,7 +536,7 @@ function Quiz() {
             </div>
           </div>
           <div className={styles.sideUpper}>
-            {!testState.showSolution ? (
+            {!quizState.showSolution ? (
               <table style={{ width: "100%" }}>
                 <thead>
                   <tr>
@@ -453,21 +572,21 @@ function Quiz() {
                 <tbody>
                   <tr>
                     <th>
-                      {testState.showSolution && testState.analytics.correct}
+                      {quizState.showSolution && quizState.analytics.correct}
                     </th>
                     <th>
-                      {testState.showSolution && testState.analytics.wrong}
+                      {quizState.showSolution && quizState.analytics.wrong}
                     </th>
                     <th>
-                      {testState.showSolution && testState.analytics.accuracy} %
+                      {quizState.showSolution && quizState.analytics.accuracy} %
                     </th>
                     <th>
-                      {testState.showSolution &&
-                        testState.analytics.correct -
-                          testState.analytics.wrong}{" "}
+                      {quizState.showSolution &&
+                        quizState.analytics.correct -
+                          quizState.analytics.wrong}{" "}
                       /{" "}
-                      {testState.showSolution &&
-                        testState.analytics.totalQuestions}
+                      {quizState.showSolution &&
+                        quizState.analytics.totalQuestions}
                     </th>
                   </tr>
                 </tbody>
@@ -483,17 +602,17 @@ function Quiz() {
                 }}
                 className={questionButtonClasses(i)}
                 style={{
-                  backgroundColor: testState.showSolution
-                    ? testState.analytics.solutions[i]
+                  backgroundColor: quizState.showSolution
+                    ? quizState.analytics.solutions[i]
                       ? "green"
-                      : testState.analytics.solutions[i] == 0
+                      : quizState.analytics.solutions[i] == 0
                       ? "red"
                       : ""
                     : "",
-                  color: testState.showSolution
-                    ? testState.analytics.solutions[i]
+                  color: quizState.showSolution
+                    ? quizState.analytics.solutions[i]
                       ? "white"
-                      : testState.analytics.solutions[i] == 0
+                      : quizState.analytics.solutions[i] == 0
                       ? "white"
                       : ""
                     : "",
@@ -505,9 +624,11 @@ function Quiz() {
           </div>
           <button
             type="button"
-            disabled={testState.showSolution}
+            disabled={quizState.showSolution}
             className={styles.submitButton}
-            onClick={() => !testState.showSolution && setShowAlert(true)}
+            onClick={() =>
+              !quizState.showSolution && isRunning && setShowAlert(true)
+            }
           >
             Submit Test
           </button>
