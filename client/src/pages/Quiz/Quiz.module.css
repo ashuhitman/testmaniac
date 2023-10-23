@@ -285,4 +285,7 @@
   .sideUpper {
     font-size: 0.7em;
   }
+  .sub-header > .marks {
+    display: none;
+  }
 }

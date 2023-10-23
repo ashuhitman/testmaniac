@@ -367,7 +367,7 @@ function Quiz() {
         )}
         <div className={styles["sub-header"]}>
           Subject: {testState.test.subject}
-          <div>
+          <div className={styles.marks}>
             Marks
             <span
               style={{
