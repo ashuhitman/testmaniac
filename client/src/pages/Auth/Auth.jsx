@@ -12,6 +12,9 @@ function Auth() {
   return (
     <div className={styles.authContainer}>
       <div className={styles.box}>
+        <div style={{ textAlign: "center" }}>
+          <h2>{isLogin ? "Login Form" : "Signup Form"}</h2>
+        </div>
         <div className={styles.authButtons}>
           <button
             className={!isLogin && styles["not-active"]}
