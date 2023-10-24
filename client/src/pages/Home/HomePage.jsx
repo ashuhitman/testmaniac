@@ -21,6 +21,7 @@ function HomePage() {
   // console.log(tests);
 
   useEffect(() => {
+    console.log(testState);
     // clear local storage
     localStorage.clear();
     console.log("homepage: ", testState);

@@ -5,9 +5,7 @@ import TestPage from "./pages/TestPage/TestPage";
 import Quiz from "./pages/Quiz/Quiz";
 import ScorePage from "./pages/ScorePage/ScorePage";
 import QuizState from "./context/Test/TestState";
-
-import Signup from "./pages/Auth/Signup";
-import Login from "./pages/Auth/Login";
+import Auth from "./pages/Auth/Auth";
 
 function App() {
   const routes = [
@@ -32,13 +30,8 @@ function App() {
       requiresAuth: false,
     },
     {
-      path: "/auth/login",
-      element: <Login />,
-      requiresAuth: false,
-    },
-    {
-      path: "/auth/signup",
-      element: <Signup />,
+      path: "/auth",
+      element: <Auth />,
       requiresAuth: false,
     },
   ];
