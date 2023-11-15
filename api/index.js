@@ -23,6 +23,7 @@ app.use(
     origin: [
       "http://127.0.0.1:5173",
       "https://dreamy-cocada-4930e9.netlify.app/",
+      "https://655500ca5edda13ede885ddf--beautiful-otter-4cbc03.netlify.app/",
     ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
