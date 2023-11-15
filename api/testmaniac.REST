@@ -98,26 +98,3 @@ Content-Type: application/json
         }
 }
 
-### Auth
-GET http://127.0.0.1:8000/auth
-
-### signup
-POST http://127.0.0.1:8000/auth/signup
-Content-Type: application/json
-
-{
-    "name": "Ashutosh Singh",
-    "email": "ashu8306@gmail.com",
-    "password": "123456",
-    "repassword": "123456",
-    "mobile": "1223344557"
-}
-
-### login
-POST http://127.0.0.1:8000/auth/login
-Content-Type: application/json
-
-{
-    "email": "ashu8306@gmail.com",
-    "password": "123456"
-}

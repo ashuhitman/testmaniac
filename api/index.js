@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import testRouter from "./Routes/test.js";
 import questionRouter from "./Routes/question.js";
 import authRouter from "./Routes/auth.js";
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 
@@ -17,7 +18,17 @@ const app = express();
 
 app.use(express.json({ limit: "30mb", extended: true }));
 app.use(express.urlencoded({ limit: "30mb", extended: true }));
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "http://127.0.0.1:5173",
+      "https://dreamy-cocada-4930e9.netlify.app/",
+    ],
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  })
+);
+app.use(cookieParser());
 
 // create routes
 app.get("/", (req, res) => {

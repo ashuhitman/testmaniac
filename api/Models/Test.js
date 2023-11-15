@@ -18,6 +18,8 @@ const testSchema = mongoose.Schema({
   questions: [questionSchema],
   createdAt: { type: Date, immutable: true, default: Date.now },
   updateddAt: { type: Date, default: Date.now },
+  owner: { type: String },
+  public: { type: Boolean, default: true },
 });
 
 const Test = new mongoose.model("Test", testSchema);

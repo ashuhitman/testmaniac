@@ -4,6 +4,7 @@ const ObjectId = mongoose.Types.ObjectId;
 const router = Router();
 
 import Test from "../Models/Test.js";
+import { authentication } from "../middleware/aurhenticate.js";
 
 // fetch all tests
 router.get("/", async (req, res) => {
@@ -37,7 +38,7 @@ router.get("/:id", async (req, res) => {
   }
 });
 // add test
-router.post("/create", async (req, res) => {
+router.post("/create", authentication, async (req, res) => {
   try {
     const test = Test(req.body);
     const result = await test.save();
@@ -48,7 +49,7 @@ router.post("/create", async (req, res) => {
 });
 
 // delete test
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", authentication, async (req, res) => {
   try {
     const result = await Test.findByIdAndDelete(req.params["id"]);
     if (result === null) return res.send({ error: "Id not found" });
